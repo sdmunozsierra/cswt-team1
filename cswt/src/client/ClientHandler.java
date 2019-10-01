@@ -4,10 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 
-import com.sun.jdi.InvalidLineNumberException;
 import org.json.JSONObject;
 
 import cswt.Ticket;
