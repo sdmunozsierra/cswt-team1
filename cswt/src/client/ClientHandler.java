@@ -90,9 +90,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String createTicket(String title, String description, String client, String severity) {
-        //if (currentUserType != DEPARTMENT_SYSADMIN) {
-         //   return INVALID;
-        //}
+        if (currentUserType != DEPARTMENT_SYSADMIN) {
+        	return INVALID;
+        }
         String sendJson = "{\"request\": " + CREATE_TICKET + ", \"title\": " + title + ", \"description\": " + description + ", \"client\": " + client + ", \"severity\": " + severity + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
