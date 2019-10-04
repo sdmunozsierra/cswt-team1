@@ -1,21 +1,28 @@
 
 
 
+import client.ClientHandler;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import static client.ClientHandler.SUCCESSFUL;
 
 public class MainWindow {
     private JPanel mainPanel;
     private JTextField usernameTextField;
     private JPasswordField passwordField;
     private JButton loginButton;
+    public static ClientHandler clientHandler = new ClientHandler();
     private JLabel LoginTextBox;
     static JFrame mainWindow;
     private String username;
     private String password;
 
     public MainWindow() {
+        clientHandler.updateAllTickets();
+        clientHandler.updateAllUsers();
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -30,13 +37,25 @@ public class MainWindow {
                     // store values for valid username and password
                     username = usernameTextField.getText().trim();
                     password = passwordField.getText().trim();
-
-                    JFrame ticketWindow = new JFrame("TicketScreen");
-                    ticketWindow.setContentPane(new TicketScreen().mainScreen);
-                    ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    ticketWindow.pack();
-                    ticketWindow.setVisible(true);
-                    mainWindow.setVisible(false);
+                    if(clientHandler.validateUser(username, password).equals(SUCCESSFUL)) {
+                        JFrame ticketWindow = new JFrame("TicketScreen");
+                        ticketWindow.setContentPane(new TicketScreen().mainScreen);
+                        ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        ticketWindow.pack();
+                        ticketWindow.setVisible(true);
+                        mainWindow.setVisible(false);
+                        TicketScreen.createModel();
+                    }
+                    else {
+                        // JOptionPane.showMessageDialog(mainWindow, "Invalid username or password.");
+                        JFrame ticketWindow = new JFrame("TicketScreen");
+                        ticketWindow.setContentPane(new TicketScreen().mainScreen);
+                        ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        ticketWindow.pack();
+                        ticketWindow.setVisible(true);
+                        mainWindow.setVisible(false);
+                        TicketScreen.createModel();
+                    }
                 }
             }
         });

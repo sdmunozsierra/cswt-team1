@@ -3,6 +3,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import static client.ClientHandler.FAILED;
+import static client.ClientHandler.SUCCESSFUL;
+
 public class AddTicketScreen {
     public JPanel mainScreen;
     private JPanel datePanel;
@@ -17,32 +20,24 @@ public class AddTicketScreen {
     private JComboBox severityComboBox;
     private JTextField clientText;
     private JTextField assignedToText;
-    Ticket ticket;
 
     public AddTicketScreen(){
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                ticket = new Ticket();
-                ticket.setName(nameText.getText());
-                ticket.setDescription(descriptionText.getText());
-                ticket.setStatus(statusComboBox.getSelectedItem().toString());
-                ticket.setPriority(priorityComboBox.getSelectedItem().toString());
-                ticket.setSeverity(severityComboBox.getSelectedItem().toString());
-                ticket.setClient(clientText.getText());
-                ticket.setAssignedTo(assignedToText.getText());
-
-                TicketScreen.getTicket(ticket);
-                TicketScreen.createModel();
-
-                JComponent comp = (JComponent) e.getSource();
-                Window win = SwingUtilities.getWindowAncestor(comp);
-                win.dispose();
-
-
-
-
+                String result = MainWindow.clientHandler.createTicket(nameText.getText(), descriptionText.getText(), clientText.getText(), severityComboBox.getSelectedItem().toString());
+                if (result == SUCCESSFUL) {
+                    TicketScreen.createModel();
+                    JComponent comp = (JComponent) e.getSource();
+                    Window win = SwingUtilities.getWindowAncestor(comp);
+                    win.dispose();
+                }
+                else if (result == FAILED) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Unable to create ticket. Please try again later.");
+                }
+                else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Invalid permissions. Cannot fulfill request.");
+                }
             }
         });
 
