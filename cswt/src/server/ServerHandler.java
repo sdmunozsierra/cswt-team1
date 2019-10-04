@@ -15,11 +15,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerHandler {
     private static ServerSocket server;
     private static final String CREATE_TICKET = "Create ticket";
     private static final String OPEN_TICKET = "Open ticket";
+    private static final String SEARCH_TICKETS = "Search tickets";
     private static final String MARK_TICKET_AS_FIXED = "Mark ticket as fixed";
     private static final String CLOSE_TICKET = "Close ticket";
     private static final String REJECT_TICKET = "Reject ticket";
@@ -31,12 +34,14 @@ public class ServerHandler {
     private static final String GET_ALL_TICKETS = "Get all tickets";
     private static final String SUCCESSFUL = "Successful";
     private static final String FAILED = "Failed";
+    private static final String EMPTY = "Empty";
+    private static final String NO_PRIORITY = "-1";
     private static final String COMPLETE = "Complete";
     private static final String CREATE_ACCOUNT = "Create account";
     private static final String VALIDATE_USER = "Validate user";
     private static final String UPDATE_PERMISSIONS = "Update permissions";
     private static final String DELETE_USER = "Delete User";
-    private static final String GET_ALL_USERS = "Get all users.";
+    private static final String GET_ALL_USERS = "Get all users";
     private static final int PORT = 9880;
     private static final String ENCODING = "UTF-8";
 
@@ -214,6 +219,41 @@ public class ServerHandler {
 	                    	String sendJson = "{\"response\":" + FAILED + "}";
 	                    	wrtr.write(sendJson);
 	                	}
+	                }
+	                else if (method.equals(SEARCH_TICKETS)) {
+	                	List<Ticket> validTickets = new ArrayList<Ticket>();
+	                	String priority = ((Integer) message.get("priority")).toString();
+	                	String severity = message.getString("severity");
+	                	String client = message.getString("client");
+	                	String assignedTo = message.getString("assignedTo");
+	                	String status = message.getString("status");
+	                	for (Ticket ticket: serverTicketManager.getAllTickets()) {
+	                		boolean valid = true;
+	                		if(!assignedTo.equals(EMPTY) && !ticket.getAssignedTo().equals(assignedTo)) {
+	                			valid = false;
+	                		}
+	                		if(!severity.equals(EMPTY) && !ticket.getSeverity().equals(severity)) {
+	                			valid = false;
+	                		}
+	                		if(!client.equals(EMPTY) && !ticket.getClient().equals(client)) {
+	                			valid = false;
+	                		}
+	                		if(!status.equals(EMPTY) && !ticket.getStatus().equals(status)) {
+	                			valid = false;
+	                		}
+	                		if(!priority.equals(NO_PRIORITY) && !ticket.getPriority().equals(priority)) {
+	                			valid = false;
+	                		}
+	                		if (valid) {
+	                			validTickets.add(ticket);
+	                		}
+	                	}
+	                	for (Ticket ticket: validTickets) {
+	                        String ticketString = ticket.toJSON().toString();
+	                        String sendJson = "{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}";
+	                        wrtr.write(sendJson);
+	                	}
+	                	wrtr.write("{\"response\":" + COMPLETE + "}");
 	                }
 	                else if (method.equals(GET_ALL_TICKETS)) {
 	                	for (Ticket ticket: serverTicketManager.getAllTickets()) {
