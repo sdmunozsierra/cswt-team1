@@ -400,7 +400,7 @@ public class ClientHandler {
      *
      * @return A List of all users
      */
-    public synchronized List<User> getAllTicket() {
+    public synchronized List<User> getAllUsers() {
         return userManager.getAllUsers();
     }
 
