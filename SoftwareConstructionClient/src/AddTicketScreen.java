@@ -1,3 +1,5 @@
+import cswt.Ticket;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,14 +27,21 @@ public class AddTicketScreen {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String result = MainWindow.clientHandler.createTicket(nameText.getText(), descriptionText.getText(), clientText.getText(), severityComboBox.getSelectedItem().toString());
-                if (result == SUCCESSFUL) {
+                Ticket ticket = new Ticket();
+                ticket.setTitle(nameText.getText());
+                ticket.setDescription(descriptionText.getText());
+                ticket.setClient(clientText.getText());
+                ticket.setSeverity(severityComboBox.getSelectedItem().toString());
+                ticket.setPriority(priorityComboBox.getSelectedItem().toString());
+                ticket.setAssignedTo(assignedToText.getText());
+                String result = MainWindow.clientHandler.createTicket(ticket);
+                if (result.equals(SUCCESSFUL)) {
                     TicketScreen.createModel();
                     JComponent comp = (JComponent) e.getSource();
                     Window win = SwingUtilities.getWindowAncestor(comp);
                     win.dispose();
                 }
-                else if (result == FAILED) {
+                else if (result.equals(FAILED)) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow, "Unable to create ticket. Please try again later.");
                 }
                 else {
