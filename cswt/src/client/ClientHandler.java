@@ -31,11 +31,7 @@ public class ClientHandler {
     private static final String MARK_TICKET_AS_FIXED = "Mark ticket as fixed";
     private static final String CLOSE_TICKET = "Close ticket";
     private static final String REJECT_TICKET = "Reject ticket";
-    private static final String ASSIGN_TICKET = "Assign ticket";
-    private static final String SET_TICKET_SEVERITY = "Set ticket severity";
-    private static final String SET_TICKET_PRIORITY = "Set ticket priority";
-    private static final String UPDATE_TICKET_RESOLUTION = "Update ticket resolution";
-    private static final String UPDATE_TIME_SPENT = "Update time spent";
+    private static final String EDIT_TICKET = "Edit ticket";
     private static final String GET_ALL_TICKETS = "Get all tickets";
     public static final String SUCCESSFUL = "Successful";
     public static final String FAILED = "Failed";
@@ -45,7 +41,7 @@ public class ClientHandler {
     private static final String COMPLETE = "Complete";
     private static final String CREATE_ACCOUNT = "Create account";
     private static final String VALIDATE_USER = "Validate user";
-    private static final String UPDATE_PERMISSIONS = "Update permissions";
+    private static final String EDIT_USER = "Edit user";
     private static final String DELETE_USER = "Delete User";
     private static final String GET_ALL_USERS = "Get all users";
     private static final String MANAGER = "Manager";
@@ -83,17 +79,16 @@ public class ClientHandler {
     /**
      * Sends a create ticket request to server.
      *
-     * @param title       The title of the ticket to be added
-     * @param description The description of the ticket to be added
-     * @param client      The client of the ticket to be added
-     * @param severity    The severity of the ticket to be added
+     * @param ticket The ticket to be created
      * @return A String that represents the result of the request
      */
-    public synchronized String createTicket(String title, String description, String client, String severity) {
+    public synchronized String createTicket(Ticket ticket ) {
         if (currentUserType != DEPARTMENT_SYSADMIN) {
         	return INVALID;
         }
-        String sendJson = "{\"request\": " + CREATE_TICKET + ", \"title\": " + title + ", \"description\": " + description + ", \"client\": " + client + ", \"severity\": " + severity + "}";
+        String sendJson = "{\"request\": " + CREATE_TICKET + ", \"title\": " + ticket.getTitle() + ", \"description\": " + 
+        		ticket.getDescription() + ", \"client\": " + ticket.getClient() + ", \"severity\": " + ticket.getSeverity() + 
+        		", \"priority\": " + ticket.getPriority() + ", \"assignedTo\": " + ticket.getAssignedTo() + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
@@ -194,108 +189,27 @@ public class ClientHandler {
     }
 
     /**
-     * Sends an assign request to server.
+     * Sends an edit ticket request to server.
      *
-     * @param id         The id of the ticket
-     * @param assignedTo The assignee of the ticket
+     * @param ticket The ticket to be edited
      * @return A String that represents the result of the request
      */
-    public synchronized String assignTicket(String id, String assignedTo) {
-        String sendJson = "{\"request\": " + ASSIGN_TICKET + ", \"id\": " + id + ", \"assignedTo\": " + assignedTo + "}";
+    public synchronized String editTicket(Ticket ticket) {
+        String sendJson = "{\"request\": " + EDIT_TICKET + ", \"resolution\": " + ticket.getResolution() + ", \"description\": " + 
+        		ticket.getDescription() + ", \"client\": " + ticket.getClient() + ", \"severity\": " + ticket.getSeverity() + 
+        		", \"priority\": " + ticket.getPriority() + ", \"assignedTo\": " + ticket.getAssignedTo() + 
+        		", \"id\": " + ticket.getId() +"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
             ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
         return FAILED;
     }
 
-    /**
-     * Sends a set ticket severity request to server.
-     *
-     * @param id       The id of the ticket
-     * @param severity The severity of the ticket
-     * @return A String that represents the result of the request
-     */
-    public synchronized String setTicketSeverity(String id, String severity) {
-        String sendJson = "{\"request\": " + SET_TICKET_SEVERITY + ", \"id\": " + id + ", \"severity\": " + severity + "}";
-        wrtr.write(sendJson);
-        String retrievedJSON = rdr.read();
-        JSONObject message = new JSONObject(retrievedJSON);
-        if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
-            return SUCCESSFUL;
-        }
-        return FAILED;
-    }
 
-    /**
-     * Sends a set ticket priority request to server.
-     *
-     * @param id       The id of the ticket
-     * @param priority The severity of the ticket
-     * @return A String that represents the result of the request
-     */
-    public synchronized String setTicketPriority(String id, String priority) {
-        if (currentUserType != MANAGER) {
-            return INVALID;
-        }
-        String sendJson = "{\"request\": " + SET_TICKET_PRIORITY + ", \"id\": " + id + ", \"priority\": " + priority + "}";
-        wrtr.write(sendJson);
-        String retrievedJSON = rdr.read();
-        JSONObject message = new JSONObject(retrievedJSON);
-        if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
-            return SUCCESSFUL;
-        }
-        return FAILED;
-    }
-
-    /**
-     * Sends a update ticket resolution request to server.
-     *
-     * @param id         The id of the ticket
-     * @param resolution The new resolution of the ticket
-     * @return A String that represents the result of the request
-     */
-    public synchronized String updateTicketResolution(String id, String resolution) {
-        String sendJson = "{\"request\": " + UPDATE_TICKET_RESOLUTION + ", \"id\": " + id + ", \"resolution\": " + resolution + "}";
-        wrtr.write(sendJson);
-        String retrievedJSON = rdr.read();
-        JSONObject message = new JSONObject(retrievedJSON);
-        if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
-            return SUCCESSFUL;
-        }
-        return FAILED;
-    }
-
-    /**
-     * Sends an update time spent request to server
-     *
-     * @param id        The id of the ticket
-     * @param timeSpent The new time spent on the ticket
-     * @return A String that represents the result of the request
-     */
-    public synchronized String updateTimeSpent(String id, String timeSpent) {
-        String sendJson = "{\"request\": " + UPDATE_TIME_SPENT + ", \"id\": " + id + ", \"timeSpent\": " + timeSpent + "}";
-        wrtr.write(sendJson);
-        String retrievedJSON = rdr.read();
-        JSONObject message = new JSONObject(retrievedJSON);
-        if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
-            return SUCCESSFUL;
-        }
-        return FAILED;
-    }
-    
     /**
      * Sends a search all tickets request to server.
      * @param status The wanted status of the tickets
@@ -398,17 +312,20 @@ public class ClientHandler {
     }
 
     /**
-     * Sends an update permissions request to server.
+     * Sends a edit user request to server.
      *
-     * @param username The username of the user
-     * @param newType  The new permissions of the user
+     * @param username   The username of the user
+     * @param password   The new password of the user
+     * @param type       The new type of the user
+     * @param actualName The new actual name of the user
+     * @param email      The new email of the user
      * @return A String that represents the result of the request
      */
-    public synchronized String updatePermissions(String username, String newType) {
+    public synchronized String editUser(String username, String password, String type, String actualName, String email) {
         if (currentUserType != TICKET_ADMIN) {
             return INVALID;
         }
-        String sendJson = "{\"request\": " + UPDATE_PERMISSIONS + ", \"username\": " + username + ", \"newType\": " + newType + "}";
+        String sendJson = "{\"request\": " + EDIT_USER + ", \"username\": " + username + ", \"password\": " + password + ", \"type\": " + type + ", \"actualName\": " + actualName + ", \"email\": " + email + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);

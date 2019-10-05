@@ -36,23 +36,54 @@ public class ServerTicketManager {
 	}
 	
 	/** Creates a new ticket and stores it. 
-	 * @param title The title of the ticket to be added
-	 * @param description The description of the ticket to be added
-	 * @param client The client of the ticket to be added
-	 * @param severity The severity of the ticket to be added
+	 * @param title The title of the ticket to be created
+	 * @param description The description of the ticket to be created
+	 * @param client The client of the ticket to be created
+	 * @param severity The severity of the ticket to be created
+	 * @param assignedTo The assignee of the ticket to be created
+	 * @param priority The priority of the ticket to be created
 	 * @return The new ticket or null if the system was unable to store the ticket
 	 * */
-	public synchronized Ticket createTicket(String title, String description, String client, String severity) {
+	public synchronized Ticket createTicket(String title, String description, String client, String severity, String assignedTo, String priority) {
 		Ticket ticket = new Ticket();
 		ticket.setTitle(title);
 		ticket.setDescription(description);
 		ticket.setClient(client);
 		ticket.setSeverity(severity);
+		ticket.setPriority(priority);
+		ticket.setAssignedTo(assignedTo);
 		ticket.setStatus(STATUS_NEW);
 		Date date = new Date();
 		ticket.setId(Long.toString(date.getTime()));
 		boolean added = addTicket(ticket);
 		if (added) {
+			return ticket;
+		}
+		return null;
+	}
+	
+	
+	/** Edits a ticket
+	 * @param id The id of the ticket to be edited
+	 * @param description The description of the ticket to be edited
+	 * @param resolution The resolution of the ticket to be edited
+	 * @param client The client of the ticket to be edited
+	 * @param severity The severity of the ticket to be edited
+	 * @param assignedTo The assignee of the ticket to be edited
+	 * @param priority The priority of the ticket to be edited
+	 * @return The edited ticket or null if the system was unable to edit the ticket
+	 * */
+	public synchronized Ticket editTicket(String id, String description, String resolution, String client, String severity, String assignedTo, String priority) {
+		Ticket ticket = this.getTicket(id);
+		ticket.setDescription(description);
+		ticket.setResolution(resolution);
+		ticket.setAssignedTo(assignedTo);
+		ticket.setClient(client);
+		ticket.setSeverity(severity);
+		ticket.setPriority(priority);
+		ticket.setAssignedTo(assignedTo);
+		boolean updated= updateTicket(ticket);
+		if (updated) {
 			return ticket;
 		}
 		return null;
@@ -139,86 +170,6 @@ public class ServerTicketManager {
 		int index = ids.indexOf(id);
 		Ticket ticket = tickets.get(index);
 		ticket.setStatus(STATUS_REJECTED);
-		boolean updated = updateTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
-	}
-	
-	/** Assigns a ticket. 
-	 * @param id The id of the ticket
-	 * @param assignedTo The user the ticket will be assigned to
-	 * @return The updated ticket or null if the system was unable to store the ticket
-	 * */
-	public synchronized Ticket assignTicket(String id, String assignedTo) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
-		ticket.setAssignedTo(assignedTo);
-		boolean updated = updateTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
-	}
-	
-	/** Sets a tickets severity. 
-	 * @param id The id of the ticket
-	 * @param severity The new severity of the ticket
-	 * @return The updated ticket or null if the system was unable to store the ticket
-	 * */
-	public synchronized Ticket setTicketSeverity(String id, String severity) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
-		ticket.setSeverity(severity);
-		boolean updated = updateTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
-	}
-	
-	/** Sets a tickets priority. 
-	 * @param id The id of the ticket
-	 * @param severity The new severity of the ticket
-	 * @return The updated ticket or null if the system was unable to store the ticket
-	 * */
-	public synchronized Ticket setTicketPriority(String id, String priority) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
-		ticket.setPriority(priority);
-		boolean updated = updateTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
-	}
-	
-	/** Updates a tickets resolution. 
-	 * @param id The id of the ticket
-	 * @param resolution The new resolution of the ticket
-	 * @return The updated ticket or null if the system was unable to store the ticket
-	 * */
-	public synchronized Ticket updateTicketResolution(String id, String resolution) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
-		ticket.setPriority(resolution);
-		boolean updated = updateTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
-	}
-	
-	/** Updates a tickets time spent. 
-	 * @param id The id of the ticket
-	 * @param timeSpent The time spent working on the ticket
-	 * @return The updated ticket or null if the system was unable to store the ticket
-	 * */
-	public synchronized Ticket updateTicketTimeSpent(String id, String timeSpent) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
-		ticket.setTimeSpent(timeSpent);
 		boolean updated = updateTicket(ticket);
 		if (updated) {
 			return ticket;

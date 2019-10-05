@@ -48,6 +48,27 @@ public class ServerUserManager {
 		return null;
 	}
 	
+	/** Edits a user's information. 
+	 * @param username The username of the user
+	 * @param password The new password of the user
+	 * @param type The new type of the user
+	 * @param actualName The new actual name of the user
+	 * @param email The new email of the user
+	 * @return The edited user or null if the system was unable to store the user
+	 * */
+	public synchronized User editUser(String username, String password, String type, String actualName, String email) {
+		User user = this.getUser(username);
+		user.setActualName(actualName);
+		user.setEmail(email);
+		user.setPassword(password);
+		user.setType(type);
+		boolean updated = updateUser(user);
+		if (updated) {
+			return user;
+		}
+		return null;
+	}
+	
 	/** Adds an existing user to the user manager 
 	 * @param user The user to be added
 	 * @return The user or null if the system was unable to store the user
@@ -74,21 +95,6 @@ public class ServerUserManager {
 		return user.getPassword().equals(password);
 	}
 	
-	/** Updates an existing users permissions.
-	 * @param username The username of the user to be updated
-	 * @param type The new type of the user to be updated
-	 * @return The new user or null if the system was unable to store the user
-	 * */
-	public synchronized User updateUserPermissions(String username, String newType) {
-		int index = this.usernames.indexOf(username);
-		User user = this.users.get(index);
-		user.setType(newType);
-		boolean updated = updateUser(user);
-		if (updated) {
-			return user;
-		}
-		return null;
-	}
 
 	/** Adds a user to the manager. 
 	 * @param user The user to be added
