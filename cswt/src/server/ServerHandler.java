@@ -11,7 +11,6 @@ import cswt.User;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -44,14 +43,6 @@ public class ServerHandler {
     public static void main(String args[]) throws IOException, ClassNotFoundException{
         ServerTicketManager serverTicketManager = new ServerTicketManager();
         ServerUserManager serverUserManager = new ServerUserManager();
-        File ticketDirectory = new File(ServerTicketManager.TICKET_DIR);
-        File userDirectory = new File(ServerUserManager.USER_DIR);
-        if (!ticketDirectory.exists()) {
-        	ticketDirectory.mkdir();
-        }
-        if (!userDirectory.exists()) {
-        	userDirectory.mkdir();
-        }
         //create the socket server object
         server = new ServerSocket(PORT);
         //creating socket and waiting for client connection

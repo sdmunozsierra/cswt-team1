@@ -1,15 +1,7 @@
 package server;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import cswt.User;
 
@@ -17,13 +9,12 @@ public class ServerUserManager {
 	
 	private List<User> users;
 	private List<String> usernames;
-	private FileWriter writer;
-	public static final String USER_DIR = Paths.get(System.getProperty("user.dir"), "users").toString();
+	private UserStorer storer;
 	
 	public ServerUserManager() {
-		this.users = new ArrayList<User>();
-		this.usernames = new ArrayList<String>();
-		loadUsers();
+		this.storer = new UserStorer();
+		this.users = this.storer.loadUsers();
+		getUsernames();
 	}
 	
 	/** Creates an account for a new user. 
@@ -62,20 +53,8 @@ public class ServerUserManager {
 		user.setEmail(email);
 		user.setPassword(password);
 		user.setType(type);
-		boolean updated = updateUser(user);
+		boolean updated = this.storer.storeUser(user);
 		if (updated) {
-			return user;
-		}
-		return null;
-	}
-	
-	/** Adds an existing user to the user manager 
-	 * @param user The user to be added
-	 * @return The user or null if the system was unable to store the user
-	 * */
-	public synchronized User addExistingUser(User user) {
-		boolean added = addUser(user);
-		if (added) {
 			return user;
 		}
 		return null;
@@ -101,14 +80,20 @@ public class ServerUserManager {
 	 * @return If the manager was able to add the user
 	 * */
 	private boolean addUser(User user) {
-		try{
-			writeUserToFile(user);
-			this.users.add(user);
-			this.usernames.add(user.getUsername());
-			return true;
-		}
-		catch(Exception e) {
+		if(!this.storer.storeUser(user)) {
 			return false;
+		}
+		this.users.add(user);
+		this.usernames.add(user.getUsername());
+		return true;
+	}
+	
+	/** Gets the list of usernames for the manager 
+	 * */
+	private synchronized void getUsernames() {
+		this.usernames = new ArrayList<String>();
+		for (User user: this.users) {
+			usernames.add(user.getUsername());
 		}
 	}
 	
@@ -119,86 +104,9 @@ public class ServerUserManager {
 		int index = this.usernames.indexOf(username);
 		this.usernames.remove(index);
 		this.users.remove(index);
-		File file = new File(Paths.get(USER_DIR, username + ".json").toString());
-		file.delete();
+		this.storer.deleteUser(username);
 	}
 	
-	/** Updates an user in the  manager. 
-	 * @param user The user to be updated
-	 * @return If the manager was able to update the user
-	 * */
-	private synchronized boolean updateUser(User user) {
-		try{
-			writeUserToFile(user);
-			return true;
-		}
-		catch(Exception e) {
-			return false;
-		}
-	}
-	
-	/** Loads in users to manager from user files. 
-	 * */
-	private synchronized void loadUsers() {
-		File folder = new File(USER_DIR);
-		if(folder.listFiles() != null) {
-			for(File file : folder.listFiles()) {
-				if((file.getName()).contains(".json") && readUserFromFile(file) != null) {
-					User user = readUserFromFile(file);
-					this.users.add(user);
-					this.usernames.add(user.getUsername());
-				}
-			}
-		}
-	}
-	
-	/** Reads a user from a ticket file. 
-	 * @param file The file to be read
-	 * @return The user read form the file or null if there was an error
-	 * */
-	private synchronized User readUserFromFile(File file) {
-		 try {
-			 JSONTokener parser = new JSONTokener(new FileReader(file));
-			 JSONObject obj = (JSONObject) parser.nextValue();
-			 JSONObject itemJSON = (JSONObject) obj;
-			 User user = fromJSON(itemJSON);
-			 return user;
-		 }
-		 catch (Exception e) {
-			 return null;
-		 }
-	}
-	
-	/** Writes an user to an user file.
-	 * @param user The user that will be written to a file
-	 * @throws IOExcpetion
-	 * */
-	private synchronized void writeUserToFile(User user) throws IOException {
-		String filename = Paths.get(USER_DIR, user.getUsername().toString() + ".json").toString();
-		File file = new File(filename);
-		file.createNewFile();
-		writer = new FileWriter(filename);
-		writer.write((user.toJSON()).toString());
-		writer.close();
-	}
-	
-	/** Parses an user from a JSONObject 
-	 * @param obj The JSONObject to be parsed
-	 * */
-	public synchronized User fromJSON(JSONObject obj) {
-		try {
-		    User user = new User();
-		    user.setActualName(obj.getString("actualName"));
-		    user.setEmail(obj.getString("email"));
-		    user.setPassword(obj.getString("password"));
-		    user.setType(obj.getString("type"));
-		    user.setUsername(obj.getString("username"));
-		    return user;
-		}
-		catch (Exception e) {
-			return null;
-		}
-	}
 	
 	/** Gets a user based on provided username
 	 * @param username The provided username
