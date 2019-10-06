@@ -108,6 +108,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String openTicket(String id, String priority, String assignedTo) {
+        if(currentUserType != DEPARTMENT_SYSADMIN){
+            return INVALID;
+        }
         String sendJson = "{\"request\": " + OPEN_TICKET + ", \"id\": " + id + ", \"priority\": " + priority + ", \"assignedTo\": " + assignedTo + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -173,7 +176,7 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String rejectTicket(String id) {
-        if (currentUserType != MANAGER || currentUserType != DEPARTMENT_SYSADMIN) {
+        if (currentUserType != MANAGER && currentUserType != DEPARTMENT_SYSADMIN) {
             return INVALID;
         }
         String sendJson = "{\"request\": " + REJECT_TICKET + ", \"id\": " + id + "}";
@@ -195,6 +198,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String editTicket(Ticket ticket) {
+        if(currentUserType == TICKET_ADMIN){
+            return INVALID;
+        }
         String sendJson = "{\"request\": " + EDIT_TICKET + ", \"resolution\": " + ticket.getResolution() + ", \"description\": " + 
         		ticket.getDescription() + ", \"client\": " + ticket.getClient() + ", \"severity\": " + ticket.getSeverity() + 
         		", \"priority\": " + ticket.getPriority() + ", \"assignedTo\": " + ticket.getAssignedTo() + 
