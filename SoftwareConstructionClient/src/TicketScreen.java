@@ -1,3 +1,5 @@
+import cswt.Ticket;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -108,16 +110,11 @@ public class TicketScreen {
     }
 
 
-    public static void getTicket(Ticket t){
-        tickets.add(t);
-
-    }
 
     public static void createModel(){
         model.clear();
-        for (int i = 0; i < tickets.size(); i++) {
-            Ticket temp = tickets.get(i);
-            model.addElement(temp.getName());
+        for (Ticket ticket: MainWindow.clientHandler.getAllTickets()){
+            model.addElement(ticket.getTitle());
         }
     }
 

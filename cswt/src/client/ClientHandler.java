@@ -83,9 +83,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String createTicket(Ticket ticket ) {
-        if (currentUserType != DEPARTMENT_SUPPORT) {
-        	return INVALID;
-        }
+       // if (currentUserType != DEPARTMENT_SUPPORT) {
+        //	return INVALID;
+        //}
         String sendJson = "{\"request\": " + CREATE_TICKET + ", \"title\": " + ticket.getTitle() + ", \"description\": " + 
         		ticket.getDescription() + ", \"client\": " + ticket.getClient() + ", \"severity\": " + ticket.getSeverity() + 
         		", \"priority\": " + ticket.getPriority() + ", \"assignedTo\": " + ticket.getAssignedTo() + "}";
@@ -108,9 +108,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String openTicket(String id, String priority, String assignedTo) {
-        if (currentUserType != MANAGER) {
-        	return INVALID;
-        }
+//        if (currentUserType != MANAGER) {
+//        	return INVALID;
+//        }
         String sendJson = "{\"request\": " + OPEN_TICKET + ", \"id\": " + id + ", \"priority\": " + priority + ", \"assignedTo\": " + assignedTo + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -130,9 +130,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String closeTicket(String id) {
-        if (currentUserType != MANAGER) {
-            return INVALID;
-        }
+//        if (currentUserType != MANAGER) {
+//            return INVALID;
+//        }
         String sendJson = "{\"request\": " + CLOSE_TICKET + ", \"id\": " + id + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -154,9 +154,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String markTicketAsFixed(String id, String resolution, String timeSpent) {
-        if (currentUserType != DEPARTMENT_SUPPORT && currentUserType != MANAGER) {
-            return INVALID;
-        }
+//        if (currentUserType != DEPARTMENT_SUPPORT && currentUserType != MANAGER) {
+//            return INVALID;
+//        }
         String sendJson = "{\"request\": " + MARK_TICKET_AS_FIXED + ", \"id\": " + id + ", \"resolution\": " + resolution + ", \"timeSpent\": " + timeSpent + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -176,9 +176,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String rejectTicket(String id) {
-        if (currentUserType != MANAGER) {
-            return INVALID;
-        }
+//        if (currentUserType != MANAGER) {
+//            return INVALID;
+//        }
         String sendJson = "{\"request\": " + REJECT_TICKET + ", \"id\": " + id + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -198,9 +198,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String editTicket(Ticket ticket) {
-    	if (currentUserType == TICKET_ADMIN) {
-    		return INVALID;
-    	}
+//    	if (currentUserType == TICKET_ADMIN) {
+//    		return INVALID;
+//    	}
         String sendJson = "{\"request\": " + EDIT_TICKET + ", \"resolution\": " + ticket.getResolution() + ", \"description\": " + 
         		ticket.getDescription() + ", \"client\": " + ticket.getClient() + ", \"severity\": " + ticket.getSeverity() + 
         		", \"priority\": " + ticket.getPriority() + ", \"assignedTo\": " + ticket.getAssignedTo() + 
@@ -281,12 +281,12 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String createAccount(String username, String password, String type, String actualName, String email) {
-        if (currentUserType != TICKET_ADMIN) {
-            return INVALID;
-        }
-        if (userManager.hasUser(username)) {
-            return FAILED;
-        }
+//        if (currentUserType != TICKET_ADMIN) {
+//            return INVALID;
+//        }
+//        if (userManager.hasUser(username)) {
+//            return FAILED;
+//        }
         String sendJson = "{\"request\": " + CREATE_ACCOUNT + ", \"username\": " + username + ", \"password\": " + password + ", \"type\": " + type + ", \"actualName\": " + actualName + ", \"email\": " + email + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -328,9 +328,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String editUser(String username, String password, String type, String actualName, String email) {
-        if (currentUserType != TICKET_ADMIN) {
-            return INVALID;
-        }
+//        if (currentUserType != TICKET_ADMIN) {
+//            return INVALID;
+//        }
         String sendJson = "{\"request\": " + EDIT_USER + ", \"username\": " + username + ", \"password\": " + password + ", \"type\": " + type + ", \"actualName\": " + actualName + ", \"email\": " + email + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -350,9 +350,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String deleteUser(String username) {
-        if (currentUserType != TICKET_ADMIN) {
-            return INVALID;
-        }
+//        if (currentUserType != TICKET_ADMIN) {
+//            return INVALID;
+//        }
         String sendJson = "{\"request\": " + DELETE_USER + ", \"username\": " + username + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
