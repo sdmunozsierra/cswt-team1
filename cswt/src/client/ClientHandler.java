@@ -46,7 +46,7 @@ public class ClientHandler {
     private static final String GET_ALL_USERS = "Get all users";
     private static final String MANAGER = "Manager";
     private static final String TICKET_ADMIN = "Ticket Admin";
-    private static final String DEPARTMENT_SYSADMIN = "Department SysAdmin";
+    private static final String DEPARTMENT_SUPPORT = "Department Support";
 
     // Class Members
     private String currentUserType = "";
@@ -83,7 +83,7 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String createTicket(Ticket ticket ) {
-        if (currentUserType != DEPARTMENT_SYSADMIN) {
+        if (currentUserType != DEPARTMENT_SUPPORT) {
         	return INVALID;
         }
         String sendJson = "{\"request\": " + CREATE_TICKET + ", \"title\": " + ticket.getTitle() + ", \"description\": " + 
@@ -108,8 +108,8 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String openTicket(String id, String priority, String assignedTo) {
-        if(currentUserType != DEPARTMENT_SYSADMIN){
-            return INVALID;
+        if (currentUserType != MANAGER) {
+        	return INVALID;
         }
         String sendJson = "{\"request\": " + OPEN_TICKET + ", \"id\": " + id + ", \"priority\": " + priority + ", \"assignedTo\": " + assignedTo + "}";
         wrtr.write(sendJson);
@@ -154,7 +154,7 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String markTicketAsFixed(String id, String resolution, String timeSpent) {
-        if (currentUserType != DEPARTMENT_SYSADMIN) {
+        if (currentUserType != DEPARTMENT_SUPPORT && currentUserType != MANAGER) {
             return INVALID;
         }
         String sendJson = "{\"request\": " + MARK_TICKET_AS_FIXED + ", \"id\": " + id + ", \"resolution\": " + resolution + ", \"timeSpent\": " + timeSpent + "}";
@@ -176,7 +176,7 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String rejectTicket(String id) {
-        if (currentUserType != MANAGER && currentUserType != DEPARTMENT_SYSADMIN) {
+        if (currentUserType != MANAGER) {
             return INVALID;
         }
         String sendJson = "{\"request\": " + REJECT_TICKET + ", \"id\": " + id + "}";
@@ -198,9 +198,9 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String editTicket(Ticket ticket) {
-        if(currentUserType == TICKET_ADMIN){
-            return INVALID;
-        }
+    	if (currentUserType == TICKET_ADMIN) {
+    		return INVALID;
+    	}
         String sendJson = "{\"request\": " + EDIT_TICKET + ", \"resolution\": " + ticket.getResolution() + ", \"description\": " + 
         		ticket.getDescription() + ", \"client\": " + ticket.getClient() + ", \"severity\": " + ticket.getSeverity() + 
         		", \"priority\": " + ticket.getPriority() + ", \"assignedTo\": " + ticket.getAssignedTo() + 
