@@ -67,5 +67,6 @@ public class MainWindow {
         mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainWindow.pack();
         mainWindow.setVisible(true);
+        UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
     }
 }
