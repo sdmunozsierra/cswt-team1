@@ -98,7 +98,7 @@ public class ServerHandler {
             String client = message.getString("client").equals(EMPTY) ? "" : message.getString("client");
             String severity =  message.getString("severity").equals(EMPTY) ? "" : message.getString("severity");
             String assignedTo = message.getString("assignedTo").equals(EMPTY) ? "" : message.getString("assignedTo");
-            String priority = ((Integer) message.get("priority")).toString().equals(EMPTY) ? "" : ((Integer) message.get("priority")).toString();
+            String priority = ((Integer) message.get("priority")).toString().equals(NO_PRIORITY) ? "" : ((Integer) message.get("priority")).toString();
             Ticket ticket = serverTicketManager.editTicket(id, description, resolution, client, severity, assignedTo, priority);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
