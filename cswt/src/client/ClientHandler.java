@@ -150,14 +150,16 @@ public class ClientHandler {
      *
      * @param id         The id of the ticket
      * @param resolution The resolution of ticket
-     * @param timeSpent  The time spent on the ticket
      * @return A String that represents the result of the request
      */
-    public synchronized String markTicketAsFixed(String id, String resolution, String timeSpent) {
+    public synchronized String markTicketAsFixed(String id, String resolution) {
 //        if (currentUserType != DEPARTMENT_SUPPORT && currentUserType != MANAGER) {
 //            return INVALID;
 //        }
-        String sendJson = "{\"request\": " + MARK_TICKET_AS_FIXED + ", \"id\": " + id + ", \"resolution\": " + resolution + ", \"timeSpent\": " + timeSpent + "}";
+        if (resolution.equals("")) {
+            return FAILED;
+        }
+        String sendJson = "{\"request\": " + MARK_TICKET_AS_FIXED + ", \"id\": " + id + ", \"resolution\": " + resolution + "}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
