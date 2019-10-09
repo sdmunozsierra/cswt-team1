@@ -203,7 +203,7 @@ public class ClientHandler {
         String description = ticket.getDescription().equals("") ? EMPTY : ticket.getDescription();
         String client = ticket.getClient().equals("") ? EMPTY : ticket.getClient();
         String severity = ticket.getSeverity().equals("") ? EMPTY : ticket.getSeverity();
-        String priority = ticket.getPriority().equals("") ? EMPTY : ticket.getPriority();
+        String priority = ticket.getPriority().equals("") ? NO_PRIORITY : ticket.getPriority();
         String assignedTo = ticket.getAssignedTo().equals("") ? EMPTY : ticket.getAssignedTo();
         String resolution = ticket.getResolution().equals("") ? EMPTY : ticket.getResolution();
         String sendJson = "{\"request\": " + EDIT_TICKET + ", \"resolution\": " + resolution + ", \"description\": " +
