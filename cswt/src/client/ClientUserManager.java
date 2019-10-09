@@ -65,6 +65,19 @@ public class ClientUserManager {
 		}
 		return this.users.get(index);
 	}
+
+    /** Updates an existing user in the user manager
+     * @param user The updated user
+     * @return The user or null if there is no user to update
+     * */
+    public synchronized User updateUser(User user) {
+        int index = this.usernames.indexOf(user.getUsername());
+        if (index == -1) {
+            return null;
+        }
+        this.users.set(index, user);
+        return user;
+    }
 	
 	/** Checks if a username has been registered in the manager
 	 * @param username The provided username

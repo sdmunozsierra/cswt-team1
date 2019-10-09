@@ -54,7 +54,7 @@ public class ClientTicketManager {
 	}
 	
 	/** Removes a ticket from the ticket manager and storage. 
-	 * @param username The id of the ticket to be removed
+	 * @param id The id of the ticket to be removed
 	 * */
 	public synchronized void removeTicket(String id) {
 		int index = this.ids.indexOf(id);
@@ -75,6 +75,19 @@ public class ClientTicketManager {
 			return null;
 		}
 		return this.tickets.get(index);
+	}
+
+	/** Updates an existing ticket in the item manager
+	 * @param ticket The updated ticket
+	 * @return The ticket or null if there is no ticket to update
+	 * */
+	public synchronized Ticket updateTicket(Ticket ticket) {
+		int index = this.ids.indexOf(ticket.getId());
+		if (index == -1) {
+			return null;
+		}
+		this.tickets.set(index, ticket);
+		return ticket;
 	}
 	
 	/** Gets all tickets
