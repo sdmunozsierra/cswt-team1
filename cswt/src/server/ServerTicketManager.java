@@ -104,15 +104,13 @@ public class ServerTicketManager {
 	/** Marks ticket as fixed and updates resolution. 
 	 * @param id The id of the ticket
 	 * @param resolution The resolution of the ticket
-	 * @param timeSpent The time spent working on the ticket of the ticket
 	 * @return The updated ticket or null if the system was unable to store the ticket
 	 * */
-	public synchronized Ticket markTicketAsFixed(String id, String resolution, String timeSpent) {
+	public synchronized Ticket markTicketAsFixed(String id, String resolution) {
 		int index = ids.indexOf(id);
 		Ticket ticket = tickets.get(index);
 		ticket.setStatus(STATUS_FIXED);
 		ticket.setResolution(resolution);
-		ticket.setTimeSpent(timeSpent);
 		boolean updated = this.storer.storeTicket(ticket);
 		if (updated) {
 			return ticket;

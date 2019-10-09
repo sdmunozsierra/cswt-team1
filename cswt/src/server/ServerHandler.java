@@ -126,8 +126,7 @@ public class ServerHandler {
         private synchronized static void markTicketAsFixed(JSONObject message) {
             String id = ((Long) message.get("id")).toString();
             String resolution = message.getString("resolution");
-            String timeSpent = ((Integer) message.get("timeSpent")).toString();
-            Ticket ticket = serverTicketManager.markTicketAsFixed(id, resolution, timeSpent);
+            Ticket ticket = serverTicketManager.markTicketAsFixed(id, resolution);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
