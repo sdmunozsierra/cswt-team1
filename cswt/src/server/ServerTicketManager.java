@@ -125,10 +125,6 @@ public class ServerTicketManager {
 	public synchronized Ticket closeTicket(String id) {
 		int index = ids.indexOf(id);
 		Ticket ticket = tickets.get(index);
-		// Ticket must be marked fixed before it can be closed
-		if (!ticket.getStatus().equals(STATUS_FIXED)) {
-			return null;
-		}
 		ticket.setStatus(STATUS_CLOSED);
 		Timestamp ts = new Timestamp((new Date()).getTime());
 		ticket.setClosedDate(ts.toString());
