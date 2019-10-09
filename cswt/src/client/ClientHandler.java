@@ -199,9 +199,16 @@ public class ClientHandler {
 //    	if (currentUserType == TICKET_ADMIN) {
 //    		return INVALID;
 //    	}
-        String sendJson = "{\"request\": " + EDIT_TICKET + ", \"resolution\": " + ticket.getResolution() + ", \"description\": " + 
-        		ticket.getDescription() + ", \"client\": " + ticket.getClient() + ", \"severity\": " + ticket.getSeverity() + 
-        		", \"priority\": " + ticket.getPriority() + ", \"assignedTo\": " + ticket.getAssignedTo() + 
+        String title = ticket.getTitle().equals("") ? EMPTY : ticket.getTitle();
+        String description = ticket.getDescription().equals("") ? EMPTY : ticket.getDescription();
+        String client = ticket.getClient().equals("") ? EMPTY : ticket.getClient();
+        String severity = ticket.getSeverity().equals("") ? EMPTY : ticket.getSeverity();
+        String priority = ticket.getPriority().equals("") ? EMPTY : ticket.getPriority();
+        String assignedTo = ticket.getAssignedTo().equals("") ? EMPTY : ticket.getAssignedTo();
+        String resolution = ticket.getResolution().equals("") ? EMPTY : ticket.getResolution();
+        String sendJson = "{\"request\": " + EDIT_TICKET + ", \"resolution\": " + resolution + ", \"description\": " +
+        		description + ", \"client\": " + client + ", \"severity\": " + severity +
+        		", \"priority\": " + priority + ", \"assignedTo\": " + assignedTo + ", \"title\": " + title +
         		", \"id\": " + ticket.getId() +"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
