@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import static client.ClientHandler.FAILED;
 import static client.ClientHandler.SUCCESSFUL;
@@ -14,7 +16,6 @@ public class AddTicketScreen {
     private JPanel labels;
     private JLabel titleText;
     private JTextField nameText;
-    private JComboBox statusComboBox;
     private JComboBox priorityComboBox;
     private JButton cancelButton;
     private JButton saveButton;
@@ -34,6 +35,9 @@ public class AddTicketScreen {
                 ticket.setSeverity(severityComboBox.getSelectedItem().toString());
                 ticket.setPriority(priorityComboBox.getSelectedItem().toString());
                 ticket.setAssignedTo(assignedToText.getText());
+
+
+
                 String result = MainWindow.clientHandler.createTicket(ticket);
                 if (result.equals(SUCCESSFUL)) {
                     TicketScreen.createModel();

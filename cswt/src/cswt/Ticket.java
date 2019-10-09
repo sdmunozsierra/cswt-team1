@@ -132,9 +132,7 @@ public class Ticket {
 	/**
 	 * @return the openedDate
 	 */
-	public String getOpenedDate() {
-		return openedDate;
-	}
+	public String getOpenedDate() { return openedDate; }
 	/**
 	 * @param openedDate the openedDate to set
 	 */
