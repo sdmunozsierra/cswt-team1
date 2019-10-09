@@ -31,6 +31,8 @@ public class ClientHandler {
     private static final String MARK_TICKET_AS_FIXED = "Mark ticket as fixed";
     private static final String CLOSE_TICKET = "Close ticket";
     private static final String REJECT_TICKET = "Reject ticket";
+    private static final String UPDATE_TICKET = "Update ticket";
+    private static final String UPDATE_USER = "Update user";
     private static final String EDIT_TICKET = "Edit ticket";
     private static final String GET_ALL_TICKETS = "Get all tickets";
     public static final String SUCCESSFUL = "Successful";
@@ -82,7 +84,7 @@ public class ClientHandler {
      * @param ticket The ticket to be created
      * @return A String that represents the result of the request
      */
-    public synchronized String createTicket(Ticket ticket ) {
+    public synchronized String createTicket(Ticket ticket) {
        // if (currentUserType != DEPARTMENT_SUPPORT) {
         //	return INVALID;
         //}
@@ -116,8 +118,7 @@ public class ClientHandler {
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
+            ticketManager.updateTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
         return FAILED;
@@ -138,8 +139,7 @@ public class ClientHandler {
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
+            ticketManager.updateTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
         return FAILED;
@@ -162,8 +162,7 @@ public class ClientHandler {
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
+            ticketManager.updateTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
         return FAILED;
@@ -184,8 +183,7 @@ public class ClientHandler {
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
+            ticketManager.updateTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
         return FAILED;
@@ -209,7 +207,7 @@ public class ClientHandler {
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
+            ticketManager.updateTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
         return FAILED;
@@ -225,7 +223,6 @@ public class ClientHandler {
      * @param assignedTo The wanted assignee of the ticket
      */
     public synchronized void searchTickets(String status, String priority, String severity, String client, String assignedTo) {
-        ticketManager.clearManager();
         if (status.equals("")) {
         	status = EMPTY;
         }
@@ -243,6 +240,7 @@ public class ClientHandler {
         }
         String sendJson = "{\"request\": " + SEARCH_TICKETS + ", \"priority\": " + priority + ", \"severity\": " + severity + ", \"status\": " + status + ", \"client\": " + client + ", \"assignedTo\": " + assignedTo + "}";
         wrtr.write(sendJson);
+        ticketManager.clearManager();
         while (true) {
             String retrievedJSON = rdr.read();
             JSONObject message = new JSONObject(retrievedJSON);
@@ -268,6 +266,24 @@ public class ClientHandler {
             }
             ticketManager.addTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
         }
+    }
+
+    /**
+     * Gets the most recent version of a ticket from the server..
+     *
+     * @param id         The id of the ticket to be updated
+     * @return A String that represents the result of the request
+     */
+    public synchronized String updateTicket(String id) {
+        String sendJson = "{\"request\": " + UPDATE_TICKET + ", \"id\": " + id  + "}";
+        wrtr.write(sendJson);
+        String retrievedJSON = rdr.read();
+        JSONObject message = new JSONObject(retrievedJSON);
+        if (message.getString("response").equals(SUCCESSFUL)) {
+            ticketManager.updateTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
+            return SUCCESSFUL;
+        }
+        return FAILED;
     }
 
     /**
@@ -336,8 +352,7 @@ public class ClientHandler {
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            userManager.removeUser(username);
-            userManager.addUser(userManager.fromJSON(new JSONObject(message.get("result").toString())));
+            userManager.updateUser(userManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
         return FAILED;
@@ -359,6 +374,24 @@ public class ClientHandler {
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
             userManager.removeUser(username);
+            return SUCCESSFUL;
+        }
+        return FAILED;
+    }
+
+    /**
+     * Gets the most recent version of a user from the server.
+     *
+     * @param username         The id of the ticket to be updated
+     * @return A String that represents the result of the request
+     */
+    public synchronized String updateUser(String username) {
+        String sendJson = "{\"request\": " + UPDATE_USER + ", \"username\": " + username  + "}";
+        wrtr.write(sendJson);
+        String retrievedJSON = rdr.read();
+        JSONObject message = new JSONObject(retrievedJSON);
+        if (message.getString("response").equals(SUCCESSFUL)) {
+            userManager.updateUser(userManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
         return FAILED;
