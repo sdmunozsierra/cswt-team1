@@ -1,4 +1,5 @@
 import cswt.Ticket;
+import org.omg.PortableInterceptor.SUCCESSFUL;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -12,6 +13,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.*;
 import java.util.List;
+
+import static client.ClientHandler.FAILED;
+import static client.ClientHandler.SUCCESSFUL;
 
 public class TicketScreen {
     public JPanel mainScreen;
@@ -119,6 +123,16 @@ public class TicketScreen {
         resolvedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                Ticket t = tickets.get(ticketList.getSelectedIndex());
+
+                String result = MainWindow.clientHandler.markTicketAsFixed(t.getId(),resolutionTextPane.getText());
+                if (result.equals(SUCCESSFUL)) {
+                    tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
+                    clear();
+                    createModel();
+                }else{
+                    JOptionPane.showMessageDialog(mainScreen, "Error: Resolution is empty.");
+                }
 
             }
         });
@@ -126,16 +140,37 @@ public class TicketScreen {
         rejectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                Ticket t = tickets.get(ticketList.getSelectedIndex());
+                if (!t.getStatus().equals("NEW")){
+                    JOptionPane.showMessageDialog(mainScreen, "Error: Cannot reject ticket that is not new.");
+                }else {
+                    String result = MainWindow.clientHandler.rejectTicket(t.getId());
+                    if (result.equals(SUCCESSFUL)){
+                        tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
+                        clear();
+                        createModel();
+                    }
+                }
 
             }
         });
         closedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-
+                Ticket t = tickets.get(ticketList.getSelectedIndex());
+                if (!t.getStatus().equals("OPEN")) {
+                    JOptionPane.showMessageDialog(mainScreen, "Error: Ticket status must be 'OPEN' in order to be closed");
+                } else {
+                    String result = MainWindow.clientHandler.closeTicket(t.getId());
+                     if (result.equals(SUCCESSFUL)) {
+                        tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
+                        clear();
+                        createModel();
+                    }
+                }
             }
         });
-        
+
 
 
         ticketSearchBar.addFocusListener(new FocusListener() {
@@ -172,6 +207,8 @@ public class TicketScreen {
             public void valueChanged(ListSelectionEvent e) {
                 if(!e.getValueIsAdjusting()){
                     if(ticketList.getSelectedValue() != null){
+                        Ticket t = tickets.get(ticketList.getSelectedIndex());
+                        MainWindow.clientHandler.updateTicket(t.getId());
                         setText();
                         setEditPropertiesText();
                     }
@@ -277,8 +314,13 @@ public class TicketScreen {
         t.setDescription(descriptionTextPane.getText());
         t.setResolution(resolutionTextPane.getText());
 
-      //  MainWindow.clientHandler.editTicket(t);
-        tickets.set(ticketList.getSelectedIndex(),t);
+        MainWindow.clientHandler.editTicket(t);
+
+        MainWindow.clientHandler.updateTicket(t.getId());
+        System.out.println(t.getTitle());
+        tickets.set(ticketList.getSelectedIndex(),MainWindow.clientHandler.getTicket(t.getId()));
+        Ticket temp = tickets.get(ticketList.getSelectedIndex());
+        System.out.println(temp.getTitle());
         createModel();
 
     }
@@ -309,6 +351,8 @@ public class TicketScreen {
 
     public static void createModel(){
         model.clear();
+        tickets.clear();
+        MainWindow.clientHandler.updateAllTickets();
         for (Ticket ticket: MainWindow.clientHandler.getAllTickets()){
             model.addElement(ticket.getTitle());
             tickets.add(ticket);
