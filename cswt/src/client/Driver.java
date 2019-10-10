@@ -14,10 +14,12 @@ public class Driver {
     	ticket.setAssignedTo("g");
     	client.createTicket(ticket);
     	String id = "";
+    	String title = "";
     	for (Ticket t: client.getAllTickets()) {
-    		System.out.println(t.getTitle());
     		id = t.getId();
+    		title = t.getTitle();
     	}
+    	System.out.println(title);
         Ticket ticket2 = new Ticket();
     	ticket2.setId(id);
         ticket2.setTitle("DED");
