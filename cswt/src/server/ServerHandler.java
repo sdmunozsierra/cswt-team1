@@ -94,12 +94,13 @@ public class ServerHandler {
         private synchronized static void editTicket(JSONObject message) {
             String id = ((Long) message.get("id")).toString();
             String resolution = message.getString("resolution").equals(EMPTY) ? "" : message.getString("resolution");
+            String title = message.getString("title").equals(EMPTY) ? "" : message.getString("title");
             String description = message.getString("description").equals(EMPTY) ? "" : message.getString("description");
             String client = message.getString("client").equals(EMPTY) ? "" : message.getString("client");
             String severity =  message.getString("severity").equals(EMPTY) ? "" : message.getString("severity");
             String assignedTo = message.getString("assignedTo").equals(EMPTY) ? "" : message.getString("assignedTo");
             String priority = ((Integer) message.get("priority")).toString().equals(NO_PRIORITY) ? "" : ((Integer) message.get("priority")).toString();
-            Ticket ticket = serverTicketManager.editTicket(id, description, resolution, client, severity, assignedTo, priority);
+            Ticket ticket = serverTicketManager.editTicket(id, title, description, resolution, client, severity, assignedTo, priority);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");

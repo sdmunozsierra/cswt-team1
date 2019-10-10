@@ -1,5 +1,7 @@
 package server;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -56,6 +58,7 @@ public class ServerTicketManager {
 	
 	/** Edits a ticket
 	 * @param id The id of the ticket to be edited
+	 * @param title The title of the ticked to be edited
 	 * @param description The description of the ticket to be edited
 	 * @param resolution The resolution of the ticket to be edited
 	 * @param client The client of the ticket to be edited
@@ -64,8 +67,9 @@ public class ServerTicketManager {
 	 * @param priority The priority of the ticket to be edited
 	 * @return The edited ticket or null if the system was unable to edit the ticket
 	 * */
-	public synchronized Ticket editTicket(String id, String description, String resolution, String client, String severity, String assignedTo, String priority) {
+	public synchronized Ticket editTicket(String id, String title, String description, String resolution, String client, String severity, String assignedTo, String priority) {
 		Ticket ticket = this.getTicket(id);
+		ticket.setTitle(title);
 		ticket.setDescription(description);
 		ticket.setResolution(resolution);
 		ticket.setAssignedTo(assignedTo);
@@ -92,8 +96,13 @@ public class ServerTicketManager {
 		ticket.setPriority(priority);
 		ticket.setStatus(STATUS_OPENED);
 		ticket.setAssignedTo(assignedTo);
-		Timestamp ts = new Timestamp((new Date()).getTime());
-		ticket.setOpenedDate(ts.toString());
+		Date date = new Date();
+		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		int year  = localDate.getYear();
+		int month = localDate.getMonthValue();
+		int day   = localDate.getDayOfMonth();
+		ticket.setOpenedDate(Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year));
+		ticket.setClosedDate("");
 		boolean updated = this.storer.storeTicket(ticket);
 		if (updated) {
 			return ticket;
@@ -127,7 +136,12 @@ public class ServerTicketManager {
 		Ticket ticket = tickets.get(index);
 		ticket.setStatus(STATUS_CLOSED);
 		Timestamp ts = new Timestamp((new Date()).getTime());
-		ticket.setClosedDate(ts.toString());
+		Date date = new Date();
+		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		int year  = localDate.getYear();
+		int month = localDate.getMonthValue();
+		int day   = localDate.getDayOfMonth();
+		ticket.setClosedDate(Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year));
 		boolean updated = this.storer.storeTicket(ticket);
 		if (updated) {
 			return ticket;
