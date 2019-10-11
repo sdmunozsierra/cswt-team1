@@ -1,13 +1,12 @@
 package server;
 
+import cswt.Ticket;
+import cswt.User;
 import json.JSONPacketReader;
 import json.JSONPacketWriter;
 import json.JSONReader;
 import json.JSONWriter;
 import org.json.JSONObject;
-
-import cswt.Ticket;
-import cswt.User;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -15,6 +14,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ServerHandler {
@@ -30,6 +30,7 @@ public class ServerHandler {
     private static final String REJECT_TICKET = "Reject ticket";
     private static final String EDIT_TICKET = "Edit ticket";
     private static final String GET_ALL_TICKETS = "Get all tickets";
+    private static final String GET_RECENT_TICKETS = "Get recent tickets";
     private static final String SUCCESSFUL = "Successful";
     private static final String FAILED = "Failed";
     private static final String EMPTY = "Empty";
@@ -42,6 +43,7 @@ public class ServerHandler {
     private static final String GET_ALL_USERS = "Get all users";
     private static final int PORT = 9880;
     private static final String ENCODING = "UTF-8";
+    private static final int NUM_RECENT = 10;
 
     //Class Members
     private static ServerSocket server;
@@ -215,6 +217,21 @@ public class ServerHandler {
             }
             wrtr.write("{\"response\":" + COMPLETE + "}");
         }
+
+        private synchronized void getRecentTickets() {
+            List<String> ids = serverTicketManager.getAllIds();
+            Collections.sort(ids);
+            Collections.reverse(ids);
+            int counter = NUM_RECENT;
+            for (String id: ids) {
+                counter--;
+                Ticket ticket = serverTicketManager.getTicket(id);
+                String ticketString = ticket.toJSON().toString();
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
+                if (counter <= 0) break;
+            }
+            wrtr.write("{\"response\":" + COMPLETE + "}");
+        }
         private synchronized void createAccount(JSONObject message) {
             String username = message.getString("username");
             if (serverUserManager.hasUser(username)) {
@@ -308,6 +325,7 @@ public class ServerHandler {
                         else if (method.equals(UPDATE_TICKET)) updateTicket(message);
                         else if (method.equals(SEARCH_TICKETS)) searchTickets(message);
                         else if (method.equals(GET_ALL_TICKETS)) getAllTickets();
+                        else if (method.equals(GET_RECENT_TICKETS)) getRecentTickets();
                         else if (method.equals(CREATE_ACCOUNT)) createAccount(message);
                         else if (method.equals(VALIDATE_USER)) validateUser(message);
                         else if (method.equals(EDIT_USER)) editUser(message);

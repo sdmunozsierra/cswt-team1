@@ -1,5 +1,4 @@
 import cswt.Ticket;
-import org.omg.PortableInterceptor.SUCCESSFUL;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -11,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -111,10 +112,14 @@ public class TicketScreen {
             public void actionPerformed(ActionEvent actionEvent) {
                 if(ticketList.getSelectedValue() != null){
                     Ticket t = tickets.get(ticketList.getSelectedIndex());
-                    MainWindow.clientHandler.openTicket(t.getId(),t.getPriority(),t.getAssignedTo());
-                    tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
-                    clear();
-                    createModel();
+                    if (SUCCESSFUL == MainWindow.clientHandler.openTicket(t.getId(),t.getPriority(),t.getAssignedTo())) {
+                        tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
+                        clear();
+                        createModel();
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
+                    }
 
                 }
             }
@@ -130,8 +135,11 @@ public class TicketScreen {
                     tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
                     clear();
                     createModel();
-                }else{
+                }else if (result.equals(FAILED)){
                     JOptionPane.showMessageDialog(mainScreen, "Error: Resolution is empty.");
+                }
+                else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
                 }
 
             }
@@ -150,6 +158,9 @@ public class TicketScreen {
                         clear();
                         createModel();
                     }
+                    else {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
+                    }
                 }
 
             }
@@ -167,6 +178,9 @@ public class TicketScreen {
                         clear();
                         createModel();
                     }
+                     else {
+                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
+                     }
                 }
             }
         });
@@ -287,10 +301,29 @@ public class TicketScreen {
         clientLabel.setText(t.getClient());
         assignedToLabel.setText(t.getAssignedTo());
         openDateLabel.setText(t.getOpenedDate());
-
-
-
-        //daysOpenLabel.setText(t.getDaysOpen();
+        closedDateLabel.setText(t.getClosedDate());
+        if (t.getClosedDate().equals("") && !t.getOpenedDate().equals("")){
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            try {
+                Date openedDate = df.parse(t.getOpenedDate());
+                Date currentDate = df.parse(df.format(new Date()));
+                int daysOpened = (int) ((currentDate.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24));
+                daysOpenLabel.setText(Integer.toString(daysOpened));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else if(!t.getClosedDate().equals("") && !t.getOpenedDate().equals("")) {
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            try {
+                Date openedDate = df.parse(t.getOpenedDate());
+                Date closedDate = df.parse(t.getClosedDate());
+                int daysOpened = (int) ((closedDate.getTime() - openedDate.getTime()) / (1000 * 60 * 60 * 24));
+                daysOpenLabel.setText(Integer.toString(daysOpened));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setEditPropertiesText(){
@@ -314,14 +347,17 @@ public class TicketScreen {
         t.setDescription(descriptionTextPane.getText());
         t.setResolution(resolutionTextPane.getText());
 
-        MainWindow.clientHandler.editTicket(t);
-
-        MainWindow.clientHandler.updateTicket(t.getId());
-        System.out.println(t.getTitle());
-        tickets.set(ticketList.getSelectedIndex(),MainWindow.clientHandler.getTicket(t.getId()));
-        Ticket temp = tickets.get(ticketList.getSelectedIndex());
-        System.out.println(temp.getTitle());
-        createModel();
+        if (SUCCESSFUL == MainWindow.clientHandler.editTicket(t)) {
+            MainWindow.clientHandler.updateTicket(t.getId());
+            System.out.println(t.getTitle());
+            tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
+            Ticket temp = tickets.get(ticketList.getSelectedIndex());
+            System.out.println(temp.getTitle());
+            createModel();
+        }
+        else {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
+        }
 
     }
 
@@ -352,7 +388,6 @@ public class TicketScreen {
     public static void createModel(){
         model.clear();
         tickets.clear();
-        MainWindow.clientHandler.updateAllTickets();
         for (Ticket ticket: MainWindow.clientHandler.getAllTickets()){
             model.addElement(ticket.getTitle());
             tickets.add(ticket);

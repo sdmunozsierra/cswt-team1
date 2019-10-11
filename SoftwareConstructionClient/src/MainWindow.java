@@ -21,8 +21,8 @@ public class MainWindow {
     private String password;
 
     public MainWindow() {
-        clientHandler.updateAllTickets();
-        clientHandler.updateAllUsers();
+        clientHandler.collectAllTickets();
+        clientHandler.collectAllUsers();
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -47,14 +47,7 @@ public class MainWindow {
                         TicketScreen.createModel();
                     }
                     else {
-                        // JOptionPane.showMessageDialog(mainWindow, "Invalid username or password.");
-                        JFrame ticketWindow = new JFrame("TicketScreen");
-                        ticketWindow.setContentPane(new TicketScreen().mainScreen);
-                        ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        ticketWindow.pack();
-                        ticketWindow.setVisible(true);
-                        mainWindow.setVisible(false);
-                        TicketScreen.createModel();
+                        JOptionPane.showMessageDialog(mainWindow, "Invalid username or password.");
                     }
                 }
             }

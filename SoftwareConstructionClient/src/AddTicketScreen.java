@@ -46,10 +46,10 @@ public class AddTicketScreen {
                     win.dispose();
                 }
                 else if (result.equals(FAILED)) {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Unable to create ticket. Please try again later.");
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Unable to create ticket. Please try again later.");
                 }
                 else {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Invalid permissions. Cannot fulfill request.");
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
                 }
             }
         });

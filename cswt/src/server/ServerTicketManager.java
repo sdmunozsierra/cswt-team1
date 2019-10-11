@@ -1,5 +1,6 @@
 package server;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
@@ -96,12 +97,9 @@ public class ServerTicketManager {
 		ticket.setPriority(priority);
 		ticket.setStatus(STATUS_OPENED);
 		ticket.setAssignedTo(assignedTo);
-		Date date = new Date();
-		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		int year  = localDate.getYear();
-		int month = localDate.getMonthValue();
-		int day   = localDate.getDayOfMonth();
-		ticket.setOpenedDate(Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year));
+		String pattern = "MM/dd/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		ticket.setOpenedDate(simpleDateFormat.format(new Date()));
 		ticket.setClosedDate("");
 		boolean updated = this.storer.storeTicket(ticket);
 		if (updated) {
@@ -135,13 +133,9 @@ public class ServerTicketManager {
 		int index = ids.indexOf(id);
 		Ticket ticket = tickets.get(index);
 		ticket.setStatus(STATUS_CLOSED);
-		Timestamp ts = new Timestamp((new Date()).getTime());
-		Date date = new Date();
-		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		int year  = localDate.getYear();
-		int month = localDate.getMonthValue();
-		int day   = localDate.getDayOfMonth();
-		ticket.setClosedDate(Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year));
+		String pattern = "MM/dd/yyyy";
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+		ticket.setClosedDate(simpleDateFormat.format(new Date()));
 		boolean updated = this.storer.storeTicket(ticket);
 		if (updated) {
 			return ticket;
@@ -204,6 +198,13 @@ public class ServerTicketManager {
 	 * */
 	public synchronized List<Ticket> getAllTickets() {
 		return this.tickets;
+	}
+
+	/** Gets all ticket ids
+	 * @return The list of all ids
+	 * */
+	public synchronized List<String> getAllIds() {
+		return this.ids;
 	}
 	
 	/** Clear manager fields

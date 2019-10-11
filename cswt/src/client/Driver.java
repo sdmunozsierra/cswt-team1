@@ -13,22 +13,12 @@ public class Driver {
     	ticket.setPriority("1");
     	ticket.setAssignedTo("g");
     	client.createTicket(ticket);
-    	String id = "";
-    	String title = "";
+
     	for (Ticket t: client.getAllTickets()) {
-    		id = t.getId();
-    		title = t.getTitle();
+			client.openTicket(t.getId(), "7", t.getAssignedTo());
     	}
-    	System.out.println(title);
-        Ticket ticket2 = new Ticket();
-    	ticket2.setId(id);
-        ticket2.setTitle("DED");
-        ticket2.setDescription("here");
-        ticket2.setClient("k");
-        ticket2.setSeverity("i");
-        ticket2.setPriority("1");
-        ticket2.setAssignedTo("g");
-        client.editTicket(ticket2);
-		System.out.println(client.getTicket(ticket2.getId()).getTitle());
+		for (Ticket t: client.getAllTickets()) {
+			System.out.println(t.getOpenedDate());
+		}
     }
 }
