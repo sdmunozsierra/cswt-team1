@@ -87,7 +87,7 @@ public class ClientHandler {
      * @return A String that represents the result of the request
      */
     public synchronized String createTicket(Ticket ticket) {
-        if (currentUserType != DEPARTMENT_SUPPORT) {
+        if (!currentUserType.equals(DEPARTMENT_SUPPORT)) {
           return INVALID;
         }
         String sendJson = "{\"request\": " + CREATE_TICKET + ", \"title\": " + ticket.getTitle() + ", \"description\": " + 
