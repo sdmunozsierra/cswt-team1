@@ -272,6 +272,8 @@ public class TicketScreen {
             resolvedButton.setVisible(true);
             saveButton.setVisible(true);
 
+        }else if (currentUser == UserManager.kindOfUser.ticketAdmin) {
+
         }else{
             resolvedButton.setVisible(true);
             saveButton.setVisible(true);
