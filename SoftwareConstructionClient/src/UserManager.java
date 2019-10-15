@@ -1,7 +1,7 @@
 public class UserManager {
 
     public  enum kindOfUser{
-        ticketAdmin,manager,sysAdmin,studentSupport
+        ticketAdmin, manager, studentSupport
     }
 
     private static  UserManager current = null;

@@ -466,6 +466,10 @@ public class ClientHandler {
         return ticketManager.getTicket(id);
     }
 
+    public synchronized String getCurrentUserType() {
+        return currentUserType;
+    }
+
     /**
      * Gets all users.
      *

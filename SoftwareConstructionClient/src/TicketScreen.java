@@ -261,11 +261,21 @@ public class TicketScreen {
     }
 
     private void makeVisible(){
-        openButton.setVisible(true);
-        resolvedButton.setVisible(true);
-        rejectButton.setVisible(true);
-        closedButton.setVisible(true);
-        saveButton.setVisible(true);
+        UserManager.kindOfUser currentUser = UserManager.getCurrent().getKindOfUser();
+        if(currentUser == UserManager.kindOfUser.manager) {
+            resolvedButton.setVisible(true);
+            saveButton.setVisible(true);
+            rejectButton.setVisible(true);
+            closedButton.setVisible(true);
+
+        } else if(currentUser == UserManager.kindOfUser.studentSupport){
+            resolvedButton.setVisible(true);
+            saveButton.setVisible(true);
+
+        }else{
+            resolvedButton.setVisible(true);
+            saveButton.setVisible(true);
+        }
     }
 
     private void makeInvisible(){

@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static client.ClientHandler.SUCCESSFUL;
+import static client.ClientHandler.*;
 
 public class MainWindow {
     private JPanel mainPanel;
@@ -44,6 +44,18 @@ public class MainWindow {
                         ticketWindow.pack();
                         ticketWindow.setVisible(true);
                         mainWindow.setVisible(false);
+                        if (clientHandler.getCurrentUserType().equals(MANAGER)) {
+                            UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
+                        }
+                        else if (clientHandler.getCurrentUserType().equals(TICKET_ADMIN)) {
+                            UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.ticketAdmin);
+                        }
+                        else if (clientHandler.getCurrentUserType().equals(DEPARTMENT_SUPPORT)) {
+                            UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.studentSupport);
+                        }
+                        else {
+                            UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
+                        }
                         TicketScreen.createModel();
                     }
                     else {
@@ -60,6 +72,5 @@ public class MainWindow {
         mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainWindow.pack();
         mainWindow.setVisible(true);
-        UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
     }
 }
