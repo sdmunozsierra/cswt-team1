@@ -336,6 +336,9 @@ public class TicketScreen {
                 e.printStackTrace();
             }
         }
+        else {
+            daysOpenLabel.setText("");
+        }
     }
 
     private void setEditPropertiesText(){
