@@ -93,4 +93,10 @@ public class User {
 		return new JSONObject(map);
 	}
 
+	@Override
+	public int hashCode() {
+		return (username.hashCode() + password.hashCode() + type.hashCode() +
+				actualName.hashCode() + email.hashCode());
+	}
+
 }

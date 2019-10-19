@@ -75,7 +75,7 @@ public class TicketStorer {
 	
 	/** Writes a ticket to a file.
 	 * @param ticket The ticket that will be written to a file
-	 * @throws IOExcpetion
+	 * @throws IOException
 	 * */
 	private synchronized void writeTicketToFile(Ticket ticket) throws IOException {
 		String filename = Paths.get(TICKET_DIR, ticket.getId().toString() + ".json").toString();

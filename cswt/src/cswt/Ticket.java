@@ -195,5 +195,12 @@ public class Ticket {
 		map.put("timeSpent", timeSpent);
 		return new JSONObject(map);
 	}
+
+	@Override
+	public int hashCode() {
+		return (title.hashCode() + description.hashCode() + status.hashCode() + resolution.hashCode() +
+				severity.hashCode() + priority.hashCode() + client.hashCode() + assignedTo.hashCode() +
+				openedDate.hashCode() + closedDate.hashCode() + id.hashCode() + timeSpent.hashCode());
+	}
 	
 }

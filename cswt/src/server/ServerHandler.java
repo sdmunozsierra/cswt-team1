@@ -8,12 +8,16 @@ import json.JSONReader;
 import json.JSONWriter;
 import org.json.JSONObject;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.Key;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,11 +34,11 @@ public class ServerHandler {
     private static final String REJECT_TICKET = "Reject ticket";
     private static final String EDIT_TICKET = "Edit ticket";
     private static final String GET_ALL_TICKETS = "Get all tickets";
+    private static final String GET_TICKET_HASH = "Get ticket hash";
+    private static final String GET_USER_HASH = "Get user hash";
     private static final String GET_RECENT_TICKETS = "Get recent tickets";
     private static final String SUCCESSFUL = "Successful";
     private static final String FAILED = "Failed";
-    private static final String EMPTY = "Empty";
-    private static final String NO_PRIORITY = "-1";
     private static final String COMPLETE = "Complete";
     private static final String CREATE_ACCOUNT = "Create account";
     private static final String VALIDATE_USER = "Validate user";
@@ -49,13 +53,41 @@ public class ServerHandler {
     private static ServerSocket server;
     private static ServerTicketManager serverTicketManager = new ServerTicketManager();
     private static ServerUserManager serverUserManager = new ServerUserManager();
+    private static final String key = "77789BXarcy77777";
+    private static Cipher encrypt;
+    private static Cipher decrypt;
 
     public static void main(String args[]) throws IOException {
+        try {
+            Key aesKey = new SecretKeySpec(key.getBytes(), "AES");
+            encrypt = Cipher.getInstance("AES");
+            encrypt.init(Cipher.ENCRYPT_MODE, aesKey);
+            decrypt = Cipher.getInstance("AES");
+            decrypt.init(Cipher.DECRYPT_MODE, aesKey);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         server = new ServerSocket(PORT);
         while(true) {
             Socket socket = server.accept();
             ServerThread thread = new ServerThread(socket);
             thread.start();
+        }
+    }
+
+    public static synchronized String decodeMessage(String message) {
+        try {
+            return new String(decrypt.doFinal(Base64.getDecoder().decode(message)));
+        } catch (Exception e) {
+            return message;
+        }
+    }
+
+    public static synchronized String encodeMessage(String message) {
+        try {
+            return Base64.getEncoder().encodeToString(encrypt.doFinal(message.getBytes()));
+        } catch (Exception e) {
+            return message;
         }
     }
 
@@ -82,7 +114,7 @@ public class ServerHandler {
             String client = message.getString("client");
             String severity =  message.getString("severity");
             String assignedTo = message.getString("assignedTo");
-            String priority = ((Integer) message.get("priority")).toString();
+            String priority = message.getString("priority");
             Ticket ticket = serverTicketManager.createTicket(title, description, client, severity, assignedTo, priority);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
@@ -93,15 +125,37 @@ public class ServerHandler {
             }
         }
 
+        private synchronized static void getTicketHashCode(JSONObject message) {
+            String id = message.getString("id");
+            Ticket ticket = serverTicketManager.getTicket(id);
+            if (ticket != null) {
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"hash\": \"" + ticket.hashCode() +"\"}");
+            }
+            else {
+                wrtr.write("{\"response\":" + FAILED + "}");
+            }
+        }
+
+        private synchronized static void getUserHashCode(JSONObject message) {
+            String username = decodeMessage(message.getString("username"));
+            User user = serverUserManager.getUser(username);
+            if (user != null) {
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"hash\": \"" + user.hashCode() +"\"}");
+            }
+            else {
+                wrtr.write("{\"response\":" + FAILED + "}");
+            }
+        }
+
         private synchronized static void editTicket(JSONObject message) {
-            String id = ((Long) message.get("id")).toString();
-            String resolution = message.getString("resolution").equals(EMPTY) ? "" : message.getString("resolution");
-            String title = message.getString("title").equals(EMPTY) ? "" : message.getString("title");
-            String description = message.getString("description").equals(EMPTY) ? "" : message.getString("description");
-            String client = message.getString("client").equals(EMPTY) ? "" : message.getString("client");
-            String severity =  message.getString("severity").equals(EMPTY) ? "" : message.getString("severity");
-            String assignedTo = message.getString("assignedTo").equals(EMPTY) ? "" : message.getString("assignedTo");
-            String priority = ((Integer) message.get("priority")).toString().equals(NO_PRIORITY) ? "" : ((Integer) message.get("priority")).toString();
+            String id = message.getString("id");
+            String resolution = message.getString("resolution");
+            String title = message.getString("title");
+            String description = message.getString("description");
+            String client = message.getString("client");
+            String severity =  message.getString("severity");
+            String assignedTo = message.getString("assignedTo");
+            String priority = message.getString("priority");
             Ticket ticket = serverTicketManager.editTicket(id, title, description, resolution, client, severity, assignedTo, priority);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
@@ -113,8 +167,8 @@ public class ServerHandler {
         }
 
         private synchronized static void openTicket(JSONObject message) {
-            String id = ((Long) message.get("id")).toString();
-            String priority = ((Integer) message.get("priority")).toString();
+            String id = message.getString("id");
+            String priority = message.getString("priority");
             String assignedTo = message.getString("assignedTo");
             Ticket ticket = serverTicketManager.openTicket(id, priority, assignedTo);
             if (ticket != null) {
@@ -126,8 +180,9 @@ public class ServerHandler {
             }
         }
 
+
         private synchronized static void markTicketAsFixed(JSONObject message) {
-            String id = ((Long) message.get("id")).toString();
+            String id = message.getString("id");
             String resolution = message.getString("resolution");
             Ticket ticket = serverTicketManager.markTicketAsFixed(id, resolution);
             if (ticket != null) {
@@ -140,7 +195,7 @@ public class ServerHandler {
         }
 
         private synchronized static void closeTicket(JSONObject message) {
-            String id = ((Long) message.get("id")).toString();
+            String id = message.getString("id");
             Ticket ticket = serverTicketManager.closeTicket(id);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
@@ -152,7 +207,7 @@ public class ServerHandler {
         }
 
         private synchronized static void rejectTicket(JSONObject message) {
-            String id = ((Long) message.get("id")).toString();
+            String id = message.getString("id");
             Ticket ticket = serverTicketManager.rejectTicket(id);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
@@ -164,7 +219,7 @@ public class ServerHandler {
         }
 
         private synchronized static void updateTicket(JSONObject message) {
-            String id = ((Long) message.get("id")).toString();
+            String id = message.getString("id");
             Ticket ticket = serverTicketManager.getTicket(id);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
@@ -177,31 +232,23 @@ public class ServerHandler {
 
         private synchronized static void searchTickets(JSONObject message) {
             List<Ticket> validTickets = new ArrayList<Ticket>();
-            String priority = ((Integer) message.get("priority")).toString();
+            String description = message.getString("description");
+            String resolution = message.getString("resolution");
+            String priority = message.getString("priority");
             String severity = message.getString("severity");
             String client = message.getString("client");
             String assignedTo = message.getString("assignedTo");
             String status = message.getString("status");
             for (Ticket ticket: serverTicketManager.getAllTickets()) {
                 boolean valid = true;
-                if(!assignedTo.equals(EMPTY) && !ticket.getAssignedTo().equals(assignedTo)) {
-                    valid = false;
-                }
-                if(!severity.equals(EMPTY) && !ticket.getSeverity().equals(severity)) {
-                    valid = false;
-                }
-                if(!client.equals(EMPTY) && !ticket.getClient().equals(client)) {
-                    valid = false;
-                }
-                if(!status.equals(EMPTY) && !ticket.getStatus().equals(status)) {
-                    valid = false;
-                }
-                if(!priority.equals(NO_PRIORITY) && !ticket.getPriority().equals(priority)) {
-                    valid = false;
-                }
-                if (valid) {
-                    validTickets.add(ticket);
-                }
+                if (!description.equals("") && !ticket.getDescription().contains(description)) valid = false;
+                if (!resolution.equals("") && !ticket.getResolution().contains(resolution)) valid = false;
+                if(!assignedTo.equals("") && !ticket.getAssignedTo().equals(assignedTo)) valid = false;
+                if(!severity.equals("") && !ticket.getSeverity().equals(severity)) valid = false;
+                if(!client.equals("") && !ticket.getClient().equals(client)) valid = false;
+                if(!status.equals("") && !ticket.getStatus().equals(status)) valid = false;
+                if(!priority.equals("") && !ticket.getPriority().equals(priority)) valid = false;
+                if (valid) validTickets.add(ticket);
             }
             for (Ticket ticket: validTickets) {
                 String ticketString = ticket.toJSON().toString();
@@ -212,6 +259,7 @@ public class ServerHandler {
 
         private synchronized void getAllTickets() {
             for (Ticket ticket: serverTicketManager.getAllTickets()) {
+                System.out.println(ticket.hashCode());
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
@@ -233,18 +281,18 @@ public class ServerHandler {
             wrtr.write("{\"response\":" + COMPLETE + "}");
         }
         private synchronized void createAccount(JSONObject message) {
-            String username = message.getString("username");
+            String username = decodeMessage(message.getString("username"));
             if (serverUserManager.hasUser(username)) {
                 String sendJson = "{\"response\":" + FAILED + "}";
             }
             String password = message.getString("password");
-            String type = message.getString("type");
-            String actualName = message.getString("actualName");
-            String email = message.getString("email");
+            String type = decodeMessage(message.getString("type"));
+            String actualName = decodeMessage(message.getString("actualName"));
+            String email = decodeMessage(message.getString("email"));
             User user = serverUserManager.createAccount(username, password, type, actualName, email);
             if (user != null) {
                 String userString = user.toJSON().toString();
-                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + userString +"}");
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": \"" + encodeMessage(userString) +"\"}");
             }
             else {
                 wrtr.write("{\"response\":" + FAILED + "}");
@@ -252,28 +300,27 @@ public class ServerHandler {
         }
 
         private synchronized void validateUser(JSONObject message) {
-            String username = message.getString("username");
+            String username = decodeMessage(message.getString("username"));
             String password = message.getString("password");
             boolean valid = serverUserManager.validateUser(username, password);
             if (valid) {
                 User user = serverUserManager.getUser(username);
-                wrtr.write("{\"response\":" + SUCCESSFUL+ ", \"permissions\": " + user.getType() +"}");
-            }
-            else {
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"permissions\": \"" + encodeMessage(user.getType()) + "\"}");
+            } else {
                 wrtr.write("{\"response\":" + FAILED + "}");
             }
         }
 
         private synchronized void editUser(JSONObject message) {
-            String username = message.getString("username");
+            String username = decodeMessage(message.getString("username"));
             String password = message.getString("password");
-            String type = message.getString("type");
-            String actualName = message.getString("actualName");
-            String email = message.getString("email");
+            String type = decodeMessage(message.getString("type"));
+            String actualName = decodeMessage(message.getString("actualName"));
+            String email = decodeMessage(message.getString("email"));
             User user = serverUserManager.editUser(username, password, type, actualName, email);
             if (user != null) {
                 String userString = user.toJSON().toString();
-                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + userString +"}");
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": \"" + encodeMessage(userString) +"\"}");
             }
             else {
                 wrtr.write("{\"response\":" + FAILED + "}");
@@ -281,17 +328,17 @@ public class ServerHandler {
         }
 
         private synchronized void deleteUser(JSONObject message) {
-            String username = message.getString("username");
+            String username = decodeMessage(message.getString("username"));
             serverUserManager.deleteUser(username);
             wrtr.write("{\"response\":" + SUCCESSFUL + "}");
         }
 
         private synchronized void updateUser(JSONObject message) {
-            String username = message.getString("username");
+            String username = decodeMessage(message.getString("username"));
             User user = serverUserManager.getUser(username);
             if (user != null) {
                 String userString = user.toJSON().toString();
-                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + userString +"}");
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": \"" + encodeMessage(userString) +"\"}");
             }
             else {
                 wrtr.write("{\"response\":" + FAILED + "}");
@@ -301,7 +348,7 @@ public class ServerHandler {
         private synchronized void getAllUsers() {
             for (User user: serverUserManager.getAllUsers()) {
                 String userString = user.toJSON().toString();
-                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + userString +"}");
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": \"" + encodeMessage(userString) +"\"}");
             }
             wrtr.write("{\"response\":" + COMPLETE + "}");
         }
@@ -332,12 +379,14 @@ public class ServerHandler {
                         else if (method.equals(DELETE_USER)) deleteUser(message);
                         else if (method.equals(UPDATE_USER)) updateUser(message);
                         else if (method.equals(GET_ALL_USERS)) getAllUsers();
+                        else if (method.equals(GET_TICKET_HASH)) getTicketHashCode(message);
+                        else if (method.equals(GET_USER_HASH)) getUserHashCode(message);
                     }
                     else {
                         cont = false;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.out.println("Connection closed");
                     String sendJson = "{\"response\":" + FAILED + "}";
                     wrtr.write(sendJson);
                 }
