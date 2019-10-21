@@ -232,6 +232,7 @@ public class ServerHandler {
 
         private synchronized static void searchTickets(JSONObject message) {
             List<Ticket> validTickets = new ArrayList<Ticket>();
+            String title = message.getString("title");
             String description = message.getString("description");
             String resolution = message.getString("resolution");
             String priority = message.getString("priority");
@@ -241,6 +242,7 @@ public class ServerHandler {
             String status = message.getString("status");
             for (Ticket ticket: serverTicketManager.getAllTickets()) {
                 boolean valid = true;
+                if (!title.equals("") && !ticket.getTitle().contains(description)) valid = false;
                 if (!description.equals("") && !ticket.getDescription().contains(description)) valid = false;
                 if (!resolution.equals("") && !ticket.getResolution().contains(resolution)) valid = false;
                 if(!assignedTo.equals("") && !ticket.getAssignedTo().equals(assignedTo)) valid = false;

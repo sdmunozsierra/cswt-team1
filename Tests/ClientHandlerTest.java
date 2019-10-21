@@ -109,16 +109,5 @@ public class ClientHandlerTest {
 
         System.out.println("Test for closeTicket");
         System.out.println(assertTrue(ClientHandler.closeTicket(1234).equals(INVALID)));
-
-
-
-
-
-
-
-
     }
-
-
-
 }
