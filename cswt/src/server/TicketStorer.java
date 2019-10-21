@@ -14,7 +14,7 @@ import org.json.JSONTokener;
 import cswt.Ticket;
 
 public class TicketStorer {
-	public static final String TICKET_DIR = Paths.get(System.getProperty("user.dir"), "tickets").toString();
+	public static String TICKET_DIR = Paths.get(System.getProperty("user.dir"), "tickets").toString();
 	private FileWriter writer;
 	
 	public TicketStorer() {
@@ -47,11 +47,13 @@ public class TicketStorer {
 	 * */
 	private synchronized Ticket readTicketFromFile(File file) {
 		 try {
-			 JSONTokener parser = new JSONTokener(new FileReader(file));
-			 JSONObject obj = (JSONObject) parser.nextValue();
-			 JSONObject itemJSON = (JSONObject) obj;
-			 Ticket ticket = fromJSON(itemJSON);
-			 return ticket;
+		 	FileReader reader = new FileReader(file);
+		 	JSONTokener parser = new JSONTokener(reader);
+		 	JSONObject obj = (JSONObject) parser.nextValue();
+		 	JSONObject itemJSON = (JSONObject) obj;
+		 	Ticket ticket = fromJSON(itemJSON);
+		 	reader.close();
+		 	return ticket;
 		 }
 		 catch (Exception e) {
 			 e.printStackTrace();
@@ -78,7 +80,7 @@ public class TicketStorer {
 	 * @throws IOException
 	 * */
 	private synchronized void writeTicketToFile(Ticket ticket) throws IOException {
-		String filename = Paths.get(TICKET_DIR, ticket.getId().toString() + ".json").toString();
+		String filename = Paths.get(TICKET_DIR, ticket.getId() + ".json").toString();
 		File file = new File(filename);
 		file.createNewFile();
 		writer = new FileWriter(filename);
@@ -89,7 +91,7 @@ public class TicketStorer {
 	/** Parses an item from a JSONObject 
 	 * @param obj The JSONObject to be parsed
 	 * */
-	public synchronized Ticket fromJSON(JSONObject obj) {
+	private synchronized Ticket fromJSON(JSONObject obj) {
 		try {
 		    Ticket ticket = new Ticket();
 		    ticket.setTitle(obj.getString("title"));

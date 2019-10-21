@@ -206,6 +206,10 @@ public class ServerTicketManager {
 	public synchronized List<String> getAllIds() {
 		return this.ids;
 	}
+
+	public synchronized  void setStorer(TicketStorer storer) {
+		this.storer = storer;
+	}
 	
 	/** Clear manager fields
 	 * */

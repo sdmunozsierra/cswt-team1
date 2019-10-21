@@ -15,7 +15,7 @@ import cswt.User;
 
 public class UserStorer {
 	private FileWriter writer;
-	public static final String USER_DIR = Paths.get(System.getProperty("user.dir"), "users").toString();
+	public static String USER_DIR = Paths.get(System.getProperty("user.dir"), "users").toString();
 	
 	public UserStorer() {
         File userDirectory = new File(USER_DIR);
@@ -30,11 +30,13 @@ public class UserStorer {
 	 * */
 	private synchronized User readUserFromFile(File file) {
 		 try {
-			 JSONTokener parser = new JSONTokener(new FileReader(file));
-			 JSONObject obj = (JSONObject) parser.nextValue();
-			 JSONObject itemJSON = (JSONObject) obj;
-			 User user = fromJSON(itemJSON);
-			 return user;
+		 	FileReader reader = new FileReader(file);
+		 	JSONTokener parser = new JSONTokener(reader);
+		 	JSONObject obj = (JSONObject) parser.nextValue();
+		 	JSONObject itemJSON = (JSONObject) obj;
+		 	User user = fromJSON(itemJSON);
+		 	reader.close();
+		 	return user;
 		 }
 		 catch (Exception e) {
 			 return null;
@@ -43,10 +45,10 @@ public class UserStorer {
 	
 	/** Writes an user to an user file.
 	 * @param user The user that will be written to a file
-	 * @throws IOExcpetion
+	 * @throws IOException
 	 * */
 	private synchronized void writeUserToFile(User user) throws IOException {
-		String filename = Paths.get(USER_DIR, user.getUsername().toString() + ".json").toString();
+		String filename = Paths.get(USER_DIR, user.getUsername() + ".json").toString();
 		File file = new File(filename);
 		file.createNewFile();
 		writer = new FileWriter(filename);
