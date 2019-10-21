@@ -51,12 +51,16 @@ public class TicketScreen {
     private JTextField titleText;
     private JButton openButton;
     private JComboBox filter;
+    private JToolBar toolbar;
+    private JButton historyButton;
+    private JButton manageUsersButton;
 
     private static List<Ticket> tickets = new ArrayList();
     private static DefaultListModel model = new DefaultListModel();
     private boolean editState = true;
 
     public TicketScreen() {
+        toolbar.setFloatable(false);
         makeInvisible();
         hideEditProperties();
         createModel();
@@ -73,7 +77,6 @@ public class TicketScreen {
                     showEditProperties();
                     editButton.setText("Exit");
                     editState = false;
-
                 }
                 else{
                     makeInvisible();
@@ -84,7 +87,6 @@ public class TicketScreen {
                     editButton.setText("Edit");
                     editState = true;
                 }
-
             }
         });
 
@@ -142,7 +144,6 @@ public class TicketScreen {
                 else {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
                 }
-
             }
         });
 
@@ -166,6 +167,7 @@ public class TicketScreen {
 
             }
         });
+
         closedButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -197,8 +199,6 @@ public class TicketScreen {
                 }
             }
         });
-
-
 
         ticketSearchBar.addFocusListener(new FocusListener() {
 
@@ -255,7 +255,6 @@ public class TicketScreen {
                 matching.addElement(model.elementAt(i));
             }
         }
-
         ticketList.setModel(matching);
     }
 
@@ -361,7 +360,6 @@ public class TicketScreen {
         severityComboBox.setSelectedItem(t.getSeverity());
         clientText.setText(t.getClient());
         assignedToText.setText(t.getAssignedTo());
-
     }
 
     private void saveChanges(){
@@ -386,31 +384,28 @@ public class TicketScreen {
         else {
             JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
         }
-
     }
 
     private void hideEditProperties(){
         titleText.setEditable(false);
+        descriptionTextPane.setEditable(false);
+        resolutionTextPane.setEditable(false);
 
         priorityComboBox.setVisible(false);
         severityComboBox.setVisible(false);
         clientText.setVisible(false);
         assignedToText.setVisible(false);
-        descriptionTextPane.setEditable(false);
-        resolutionTextPane.setEditable(false);
-
     }
 
     private void showEditProperties(){
         titleText.setEditable(true);
+        descriptionTextPane.setEditable(true);
+        resolutionTextPane.setEditable(true);
 
         priorityComboBox.setVisible(true);
         severityComboBox.setVisible(true);
         clientText.setVisible(true);
         assignedToText.setVisible(true);
-
-        descriptionTextPane.setEditable(true);
-        resolutionTextPane.setEditable(true);
     }
 
     public static void createModel(){
@@ -452,7 +447,4 @@ public class TicketScreen {
             }
         }
     }
-
-
-
 }
