@@ -50,6 +50,7 @@ public class TicketScreen {
 
     private JTextField titleText;
     private JButton openButton;
+    private JComboBox filter;
 
     private static List<Ticket> tickets = new ArrayList();
     private static DefaultListModel model = new DefaultListModel();
@@ -59,7 +60,7 @@ public class TicketScreen {
         makeInvisible();
         hideEditProperties();
         createModel();
-
+        filter.setFocusable(false);
 
 // Listeners
         editButton.addActionListener(new ActionListener() {
@@ -173,14 +174,26 @@ public class TicketScreen {
                     JOptionPane.showMessageDialog(mainScreen, "Error: Ticket status must be 'OPEN' in order to be closed");
                 } else {
                     String result = MainWindow.clientHandler.closeTicket(t.getId());
-                     if (result.equals(SUCCESSFUL)) {
+                    if (result.equals(SUCCESSFUL)) {
                         tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
                         clear();
                         createModel();
                     }
-                     else {
-                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
-                     }
+                    else {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
+                    }
+                }
+            }
+        });
+
+        filter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int i = filter.getSelectedIndex();
+                if (i != -1){
+                    filter.setFocusable(true);
+                    filter.requestFocus();
+                    searchAttribute(filter.getItemAt(i).toString());
                 }
             }
         });
@@ -408,6 +421,38 @@ public class TicketScreen {
             tickets.add(ticket);
         }
     }
+
+    private void searchAttribute(String a) {
+        model.clear();
+        tickets.clear();
+        for (Ticket ticket: MainWindow.clientHandler.getAllTickets()){
+            if (a.matches("Title")){
+                model.addElement(ticket.getTitle());
+                tickets.add(ticket);
+            }
+            else if (a.matches("Status")){
+                model.addElement(ticket.getStatus());
+                tickets.add(ticket);
+            }
+            else if (a.matches("Priority")){
+                model.addElement(ticket.getPriority());
+                tickets.add(ticket);
+            }
+            else if (a.matches("Severity")){
+                model.addElement(ticket.getSeverity());
+                tickets.add(ticket);
+            }
+            else if (a.matches("Client")){
+                model.addElement(ticket.getClient());
+                tickets.add(ticket);
+            }
+            else if (a.matches("Assigned to")){
+                model.addElement(ticket.getAssignedTo());
+                tickets.add(ticket);
+            }
+        }
+    }
+
 
 
 }
