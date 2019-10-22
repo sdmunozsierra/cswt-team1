@@ -6,10 +6,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -61,10 +58,14 @@ public class TicketScreen {
 
     public TicketScreen() {
         toolbar.setFloatable(false);
+        manageUsersButton.setFocusable(false);
+        historyButton.setFocusable(false);
         makeInvisible();
         hideEditProperties();
         createModel();
         filter.setFocusable(false);
+
+
 
 // Listeners
         editButton.addActionListener(new ActionListener() {
@@ -95,7 +96,7 @@ public class TicketScreen {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // open edit creation window
+                // open add ticket window
                 JFrame ticketWindow = new JFrame("AddTicketScreen");
                 ticketWindow.setMinimumSize(new Dimension(300, 500));
                 ticketWindow.setContentPane(new AddTicketScreen().mainScreen);
@@ -185,6 +186,16 @@ public class TicketScreen {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
                     }
                 }
+            }
+        });
+
+        manageUsersButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JFrame ticketWindow = new JFrame("Manage Users");
+                ticketWindow.setMinimumSize(new Dimension(300, 500));
+                ticketWindow.setContentPane(new UserManagementWindow().mainScreen);
+                ticketWindow.setVisible(true);
             }
         });
 
