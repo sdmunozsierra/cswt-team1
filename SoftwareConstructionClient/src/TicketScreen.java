@@ -198,6 +198,16 @@ public class TicketScreen {
             }
         });
 
+        historyButton.addActionListener((new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame historyWindow = new JFrame("History");
+                historyWindow.setMinimumSize(new Dimension(300,500));
+                historyWindow.setContentPane(new HistoryScreen().mainScreen);
+                historyWindow.setVisible(true);
+            }
+        }));
+
         filter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
