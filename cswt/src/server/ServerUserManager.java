@@ -131,18 +131,18 @@ public class ServerUserManager {
 		}
 		return true;
 	}
+
+	/** Sets the storer for the users
+	 * @param storer The storer to be set
+	 * */
+	public synchronized  void setStorer(UserStorer storer) {
+		this.storer = storer;
+	}
 	
 	/** Gets all current users
 	 * @return The list of all users
 	 * */
 	public synchronized List<User> getAllUsers() {
 		return this.users;
-	}
-	
-	/** Clear manager fields
-	 * */
-	public synchronized void clearManager() {
-		this.usernames.clear();
-		this.users.clear();
 	}
 }

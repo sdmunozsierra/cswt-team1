@@ -14,7 +14,7 @@ public class ServerTicketManager {
 	
 	private List<Ticket> tickets;
 	private List<String> ids;
-	private TicketStorer storer = new TicketStorer();
+	private TicketStorer storer;
 	// Status constants
 	private static final String STATUS_NEW = "NEW";
 	private static final String STATUS_OPENED = "OPEN";
@@ -207,14 +207,10 @@ public class ServerTicketManager {
 		return this.ids;
 	}
 
+	/** Sets the storer for the tickets
+	 * @param storer The storer to be set
+	 * */
 	public synchronized  void setStorer(TicketStorer storer) {
 		this.storer = storer;
-	}
-	
-	/** Clear manager fields
-	 * */
-	public synchronized void clearManager() {
-		this.tickets.clear();
-		this.ids.clear();
 	}
 }
