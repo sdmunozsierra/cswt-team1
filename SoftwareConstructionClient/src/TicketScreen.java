@@ -12,8 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
-import static client.ClientHandler.FAILED;
-import static client.ClientHandler.SUCCESSFUL;
+import static client.ClientHandler.*;
 
 public class TicketScreen {
     public JPanel mainScreen;
@@ -290,6 +289,7 @@ public class TicketScreen {
             saveButton.setVisible(true);
             rejectButton.setVisible(true);
             closedButton.setVisible(true);
+            openButton.setVisible(true);
 
         } else if(currentUser == UserManager.kindOfUser.studentSupport){
             resolvedButton.setVisible(true);
@@ -383,14 +383,18 @@ public class TicketScreen {
         t.setAssignedTo(assignedToText.getText());
         t.setDescription(descriptionTextPane.getText());
         t.setResolution(resolutionTextPane.getText());
-
-        if (SUCCESSFUL == MainWindow.clientHandler.editTicket(t)) {
+        String status = MainWindow.clientHandler.editTicket(t);
+        if (status.equals(SUCCESSFUL)) {
             MainWindow.clientHandler.updateTicket(t.getId());
-            System.out.println(t.getTitle());
             tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
             Ticket temp = tickets.get(ticketList.getSelectedIndex());
-            System.out.println(temp.getTitle());
             createModel();
+        }
+        else if (status.equals(FAILED)){
+            JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Invalid fields entered. Please try again.");
+        }
+        else if (status.equals(OLD)) {
+            JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Ticket has not been updated. Refresh ticket and try again.");
         }
         else {
             JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");

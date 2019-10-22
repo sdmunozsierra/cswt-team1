@@ -1,6 +1,10 @@
+import cswt.User;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserManagementWindow {
     public JPanel mainScreen;
@@ -18,9 +22,12 @@ public class UserManagementWindow {
     private JButton addButton;
     private JButton saveButton;
     private JPanel edit;
+    private static List<User> users = new ArrayList();
+    private static DefaultListModel model = new DefaultListModel();
 
     public UserManagementWindow(){
         edit.setVisible(false);
+        createModel();
 
         addButton.addActionListener(new ActionListener() {
             @Override
@@ -53,6 +60,16 @@ public class UserManagementWindow {
                 edit.setVisible(true);
             }
         });
+        userList.setModel(model);
+    }
+
+    public static void createModel(){
+        model.clear();
+        users.clear();
+        for (User user: MainWindow.clientHandler.getAllUsers()){
+            model.addElement(user.getUsername());
+            users.add(user);
+        }
     }
 
 }

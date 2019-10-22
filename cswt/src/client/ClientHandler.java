@@ -124,7 +124,7 @@ public class ClientHandler {
      * @param id         The id of the ticket
      * @return Whether of not the ticket can be edited
      */
-    private synchronized boolean isTicketEditable(String id) {
+    public synchronized boolean isTicketEditable(String id) {
         String sendJson = "{\"request\": " + GET_TICKET_HASH + ", \"id\": \"" + id + "\"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -142,8 +142,8 @@ public class ClientHandler {
      * @param username        The username of the user
      * @return Whether of not the ticket can be edited
      */
-    private synchronized boolean isUserEditable(String username) {
-        String sendJson = "{\"request\": " + GET_USER_HASH + ", \"id\": \"" + encodeMessage(username) + "\"}";
+    public synchronized boolean isUserEditable(String username) {
+        String sendJson = "{\"request\": " + GET_USER_HASH + ", \"username\": \"" + encodeMessage(username) + "\"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
@@ -172,7 +172,7 @@ public class ClientHandler {
         if (!isTicketEditable(id)) {
             return OLD;
         }
-        String sendJson = "{\"request\": " + OPEN_TICKET + ", \"id\": " + id + ", \"user\": \"" + currentUser + "\", \"priority\": \"" + priority + "\", \"assignedTo\": \"" + assignedTo + "\"}";
+        String sendJson = "{\"request\": " + OPEN_TICKET + ", \"id\": \"" + id + "\", \"user\": \"" + currentUser + "\", \"priority\": \"" + priority + "\", \"assignedTo\": \"" + assignedTo + "\"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
@@ -438,7 +438,9 @@ public class ClientHandler {
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            userManager.updateUser(userManager.fromJSON(new JSONObject(decodeMessage(message.get("result").toString()))));
+            User user = userManager.fromJSON(new JSONObject(decodeMessage(message.get("result").toString())));
+            user.setPassword(decodeMessage(user.getPassword()));
+            userManager.updateUser(user);
             return SUCCESSFUL;
         }
         return FAILED;
@@ -477,7 +479,9 @@ public class ClientHandler {
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
-            userManager.updateUser(userManager.fromJSON(new JSONObject(decodeMessage(message.get("result").toString()))));
+            User user = userManager.fromJSON(new JSONObject(decodeMessage(message.get("result").toString())));
+            user.setPassword(decodeMessage(user.getPassword()));
+            userManager.updateUser(user);
             return SUCCESSFUL;
         }
         return FAILED;
@@ -496,7 +500,9 @@ public class ClientHandler {
             if (message.getString("response").equals(COMPLETE)) {
                 break;
             }
-            userManager.addUser(userManager.fromJSON(new JSONObject(decodeMessage(message.get("result").toString()))));
+            User user = userManager.fromJSON(new JSONObject(decodeMessage(message.get("result").toString())));
+            user.setPassword(decodeMessage(user.getPassword()));
+            userManager.addUser(user);
         }
         return SUCCESSFUL;
     }

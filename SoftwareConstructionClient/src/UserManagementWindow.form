@@ -72,8 +72,7 @@
                   <model>
                     <item value="Ticket Admin"/>
                     <item value="Manager"/>
-                    <item value="System Admin"/>
-                    <item value="Student Support"/>
+                    <item value="Support"/>
                   </model>
                 </properties>
               </component>

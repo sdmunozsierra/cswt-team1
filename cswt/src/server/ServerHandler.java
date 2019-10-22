@@ -140,7 +140,11 @@ public class ServerHandler {
             String username = decodeMessage(message.getString("username"));
             User user = serverUserManager.getUser(username);
             if (user != null) {
-                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"hash\": \"" + user.hashCode() +"\"}");
+                String encryptedPassword = user.getPassword();
+                user.setPassword(decodeMessage(encryptedPassword));
+                int hash =  user.hashCode();
+                user.setPassword(encryptedPassword);
+                wrtr.write("{\"response\":" + SUCCESSFUL + ", \"hash\": \"" + hash +"\"}");
             }
             else {
                 wrtr.write("{\"response\":" + FAILED + "}");
@@ -242,7 +246,7 @@ public class ServerHandler {
             String status = message.getString("status");
             for (Ticket ticket: serverTicketManager.getAllTickets()) {
                 boolean valid = true;
-                if (!title.equals("") && !ticket.getTitle().contains(description)) valid = false;
+                if (!title.equals("") && !ticket.getTitle().contains(title)) valid = false;
                 if (!description.equals("") && !ticket.getDescription().contains(description)) valid = false;
                 if (!resolution.equals("") && !ticket.getResolution().contains(resolution)) valid = false;
                 if(!assignedTo.equals("") && !ticket.getAssignedTo().equals(assignedTo)) valid = false;
@@ -261,7 +265,6 @@ public class ServerHandler {
 
         private synchronized void getAllTickets() {
             for (Ticket ticket: serverTicketManager.getAllTickets()) {
-                System.out.println(ticket.hashCode());
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
@@ -388,7 +391,7 @@ public class ServerHandler {
                         cont = false;
                     }
                 } catch (Exception e) {
-                    System.out.println("Connection closed");
+                    e.printStackTrace();
                     String sendJson = "{\"response\":" + FAILED + "}";
                     wrtr.write(sendJson);
                 }
