@@ -50,6 +50,7 @@ public class TicketScreen {
     private JToolBar toolbar;
     private JButton historyButton;
     private JButton manageUsersButton;
+    private JButton signOutButton;
 
     private static List<Ticket> tickets = new ArrayList();
     private static DefaultListModel model = new DefaultListModel();
@@ -57,16 +58,14 @@ public class TicketScreen {
 
     public TicketScreen() {
         toolbar.setFloatable(false);
-        manageUsersButton.setFocusable(false);
-        historyButton.setFocusable(false);
+        removeFocus();
         makeInvisible();
         hideEditProperties();
         createModel();
-        filter.setFocusable(false);
 
 
 
-// Listeners
+// Action Listeners
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -188,6 +187,18 @@ public class TicketScreen {
             }
         });
 
+        filter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int i = filter.getSelectedIndex();
+                if (i != -1){
+                    filter.setFocusable(true);
+                    filter.requestFocus();
+                    searchAttribute(filter.getItemAt(i).toString());
+                }
+            }
+        });
+
         manageUsersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -208,18 +219,18 @@ public class TicketScreen {
             }
         }));
 
-        filter.addActionListener(new ActionListener() {
+        signOutButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                int i = filter.getSelectedIndex();
-                if (i != -1){
-                    filter.setFocusable(true);
-                    filter.requestFocus();
-                    searchAttribute(filter.getItemAt(i).toString());
-                }
+            public void actionPerformed(ActionEvent e) {
+                JComponent comp = (JComponent) e.getSource();
+                Window win = SwingUtilities.getWindowAncestor(comp);
+                win.dispose();
+                MainWindow.mainWindow.setVisible(true);
             }
         });
 
+
+// Focus Listener
         ticketSearchBar.addFocusListener(new FocusListener() {
 
             @Override
@@ -239,6 +250,7 @@ public class TicketScreen {
             }
         });
 
+// Document Listener
         ticketSearchBar.getDocument().addDocumentListener(new DocumentListener()
         {
             public void changedUpdate(DocumentEvent arg0) { }
@@ -471,5 +483,12 @@ public class TicketScreen {
                 tickets.add(ticket);
             }
         }
+    }
+
+    private void removeFocus(){
+        manageUsersButton.setFocusable(false);
+        historyButton.setFocusable(false);
+        filter.setFocusable(false);
+        signOutButton.setFocusable(false);
     }
 }

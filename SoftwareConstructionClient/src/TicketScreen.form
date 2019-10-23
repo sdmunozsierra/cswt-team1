@@ -487,6 +487,15 @@
               <text value="History"/>
             </properties>
           </component>
+          <hspacer id="9930b">
+            <constraints/>
+          </hspacer>
+          <component id="b911d" class="javax.swing.JButton" binding="signOutButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <text value="Sign out"/>
+            </properties>
+          </component>
         </children>
       </toolbar>
     </children>

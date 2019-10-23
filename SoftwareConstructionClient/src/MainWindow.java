@@ -4,6 +4,7 @@
 import client.ClientHandler;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -18,7 +19,7 @@ public class MainWindow {
     private JButton loginButton;
     public static ClientHandler clientHandler = new ClientHandler();
     private JLabel LoginTextBox;
-    static JFrame mainWindow;
+    public static JFrame mainWindow;
     private String username;
     private String password;
 
@@ -45,7 +46,6 @@ public class MainWindow {
                         ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                         ticketWindow.pack();
                         ticketWindow.setVisible(true);
-                        mainWindow.setVisible(false);
                         if (clientHandler.getCurrentUserType().equals(MANAGER)) {
                             UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
                         }
@@ -59,6 +59,11 @@ public class MainWindow {
                             UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
                         }
                         TicketScreen.createModel();
+
+                        JComponent comp = (JComponent) e.getSource();
+                        Window win = SwingUtilities.getWindowAncestor(comp);
+                        win.dispose();
+                        clear();
                     }
                     else {
                         JOptionPane.showMessageDialog(mainWindow, "Invalid username or password.");
@@ -66,6 +71,10 @@ public class MainWindow {
                 }
             }
         });
+    }
+    public void clear(){
+        usernameTextField.setText("");
+        passwordField.setText("");
     }
 
     public static void main (String [] args){
