@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="HistoryScreen">
+  <grid id="27dc6" binding="mainScreen" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="977c5" binding="historyViewManagement" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="ce137" class="javax.swing.JComboBox" binding="filter">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <model>
+                <item value="Create Ticket"/>
+                <item value="Open Ticket"/>
+                <item value="Close Ticket"/>
+                <item value="Mark Ticket as fixed"/>
+                <item value="Reject Ticket"/>
+                <item value="Edit Ticket"/>
+                <item value="Search Ticket"/>
+                <item value="Update All Tickets"/>
+                <item value="Get Ticket"/>
+                <item value="Create Account"/>
+                <item value="Validate User"/>
+                <item value="Edit User"/>
+                <item value="Delete User"/>
+                <item value="Update All Users"/>
+                <item value="Get All Users"/>
+                <item value="Get User"/>
+              </model>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <component id="7bb5d" class="javax.swing.JList" binding="historyList">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="50"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+    </children>
+  </grid>
+</form>
