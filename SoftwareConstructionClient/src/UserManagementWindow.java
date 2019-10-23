@@ -38,9 +38,24 @@ public class UserManagementWindow {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (userList.getSelectedValue() != null){
-                    User user = users.get(userList.getSelectedIndex());
-                    MainWindow.clientHandler.deleteUser(user.getUsername());
-                    createModel();
+                    Object[] options = {"Yes", "No"};
+                    int n = JOptionPane.showOptionDialog(mainScreen,
+                            "Are you sure you want to delete user?",    //message
+                            "Warning",                                  //title
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE,
+                            null,                                     //no custom Icon
+                            options,                                       //the titles of buttons
+                            options[1]);                                   //default button
+
+                    // if user selected yes
+                    if (n==0){
+                        User user = users.get(userList.getSelectedIndex());
+                        MainWindow.clientHandler.deleteUser(user.getUsername());
+                        createModel();
+                    }
+                }else {
+                    JOptionPane.showMessageDialog(mainScreen, "Error: Select user to remove.");
                 }
             }
         });
