@@ -6,6 +6,9 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static client.ClientHandler.FAILED;
+import static client.ClientHandler.SUCCESSFUL;
+
 public class UserManagementWindow {
     public JPanel mainScreen;
     private JPanel list;
@@ -14,7 +17,7 @@ public class UserManagementWindow {
     private JButton editButton;
     private JTextField nameText;
     private JTextField usernameText;
-    private JComboBox comboBox1;
+    private JComboBox type;
     private JButton cancelButton;
     private JTextField passwordText;
     private JTextField emailText;
@@ -26,44 +29,107 @@ public class UserManagementWindow {
     private static DefaultListModel model = new DefaultListModel();
 
     public UserManagementWindow(){
+        clear();
         edit.setVisible(false);
         createModel();
+        userList.setModel(model);
+
+        removeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                if (userList.getSelectedValue() != null){
+                    User user = users.get(userList.getSelectedIndex());
+                    MainWindow.clientHandler.deleteUser(user.getUsername());
+                    createModel();
+                }
+            }
+        });
 
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                list.setVisible(false);
-                edit.setVisible(true);
+                editModeON();
             }
         });
 
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                edit.setVisible(false);
-                list.setVisible(true);
+                clear();
+                editModeOFF();
             }
         });
 
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                edit.setVisible(false);
-                list.setVisible(true);
+                boolean empty = nameText.getText().isEmpty() || usernameText.getText().isEmpty() || passwordText.getText().isEmpty() || emailText.getText().isEmpty();
+
+                if (!empty){
+
+                    String result = MainWindow.clientHandler.createAccount(usernameText.getText(), passwordText.getText(), type.getSelectedItem().toString(), nameText.getText(), emailText.getText());
+                    if (result.equals(SUCCESSFUL)) {
+                        createModel();
+                        userList.setModel(model);
+                        clear();
+                        editModeOFF();
+                    }
+                    else if (result.equals(FAILED)) {
+                        JOptionPane.showMessageDialog(mainScreen, "Error: Unable to create user. Please try again later.");
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(mainScreen, "Error: You do not have the permissions to perform this operation.");
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(mainScreen, "Error: All fields need to be populated in order to create user.");
+                }
             }
         });
 
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                list.setVisible(false);
-                edit.setVisible(true);
+                if (userList.getSelectedValue() != null){
+                    editModeON();
+                    setEditPropertiesText();
+                }else {
+                    JOptionPane.showMessageDialog(mainScreen, "Error: Select user to edit.");
+                }
             }
         });
-        userList.setModel(model);
     }
 
-    public static void createModel(){
+    private void editModeON(){
+        list.setVisible(false);
+        edit.setVisible(true);
+    }
+
+
+    private void editModeOFF(){
+        list.setVisible(true);
+        edit.setVisible(false);
+    }
+
+    private void setEditPropertiesText(){
+        User user = users.get(userList.getSelectedIndex());
+
+        nameText.setText(user.getActualName());
+        usernameText.setText(user.getUsername());
+        passwordText.setText(user.getPassword());
+        emailText.setText(user.getEmail());
+        type.setSelectedItem(user.getType());
+    }
+
+    private void clear(){
+        nameText.setText("");
+        usernameText.setText("");
+        passwordText.setText("");
+        emailText.setText("");
+        type.setSelectedItem(type.getItemAt(0));
+    }
+
+    private void createModel(){
         model.clear();
         users.clear();
         for (User user: MainWindow.clientHandler.getAllUsers()){
