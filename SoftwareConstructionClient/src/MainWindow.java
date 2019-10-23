@@ -1,14 +1,10 @@
-
-
-
 import client.ClientHandler;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+
 
 import static client.ClientHandler.*;
 
@@ -41,11 +37,6 @@ public class MainWindow {
                     username = usernameTextField.getText().trim();
                     password = passwordField.getText().trim();
                     if(clientHandler.validateUser(username, password).equals(SUCCESSFUL)) {
-                        JFrame ticketWindow = new JFrame("TicketScreen");
-                        ticketWindow.setContentPane(new TicketScreen().mainScreen);
-                        ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        ticketWindow.pack();
-                        ticketWindow.setVisible(true);
                         if (clientHandler.getCurrentUserType().equals(MANAGER)) {
                             UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
                         }
@@ -58,6 +49,11 @@ public class MainWindow {
                         else {
                             UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
                         }
+                        JFrame ticketWindow = new JFrame("TicketScreen");
+                        ticketWindow.setContentPane(new TicketScreen().mainScreen);
+                        ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        ticketWindow.pack();
+                        ticketWindow.setVisible(true);
                         TicketScreen.createModel();
 
                         JComponent comp = (JComponent) e.getSource();

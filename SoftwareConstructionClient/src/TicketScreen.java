@@ -331,6 +331,17 @@ public class TicketScreen {
         rejectButton.setVisible(false);
         closedButton.setVisible(false);
         saveButton.setVisible(false);
+
+        // if user is admin, add or edit buttons will not be available
+        UserManager.kindOfUser currentUser = UserManager.getCurrent().getKindOfUser();
+        if (currentUser == UserManager.kindOfUser.ticketAdmin){
+            addButton.setVisible(false);
+            editButton.setVisible(false);
+        }
+        else{
+            historyButton.setVisible(false);
+            manageUsersButton.setVisible(false);
+        }
     }
 
     private void hideLabels(){
