@@ -65,6 +65,7 @@ public class UserManagementWindow {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                usernameText.setEditable(true);
                 editModeON();
             }
         });
