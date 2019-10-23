@@ -28,6 +28,8 @@ public class UserManagementWindow {
     private static List<User> users = new ArrayList();
     private static DefaultListModel model = new DefaultListModel();
 
+    private boolean editing = false;
+
     public UserManagementWindow(){
         clear();
         edit.setVisible(false);
@@ -72,6 +74,7 @@ public class UserManagementWindow {
             public void actionPerformed(ActionEvent actionEvent) {
                 clear();
                 editModeOFF();
+                editing = false;
             }
         });
 
@@ -82,23 +85,38 @@ public class UserManagementWindow {
 
                 if (!empty){
 
-                    String result = MainWindow.clientHandler.createAccount(usernameText.getText(), passwordText.getText(), type.getSelectedItem().toString(), nameText.getText(), emailText.getText());
+                    String result;
+                    if(editing){
+                        result = MainWindow.clientHandler.editUser(usernameText.getText(), passwordText.getText(), type.getSelectedItem().toString(), nameText.getText(), emailText.getText());
+                    }else{
+                        result = MainWindow.clientHandler.createAccount(usernameText.getText(), passwordText.getText(), type.getSelectedItem().toString(), nameText.getText(), emailText.getText());
+                    }
+
                     if (result.equals(SUCCESSFUL)) {
-                        createModel();
-                        userList.setModel(model);
-                        clear();
-                        editModeOFF();
+                            createModel();
+                            userList.setModel(model);
+                            clear();
+                            editModeOFF();
+                            editing = false;
+                        }
+                        else if (result.equals(FAILED)) {
+                            if (editing){
+                                JOptionPane.showMessageDialog(mainScreen, "Error: Unable to update user. Please try again later.");
+                            }else {
+                                JOptionPane.showMessageDialog(mainScreen, "Error: Unable to create user. Please try again later.");
+                            }
+                        }
+                        else {
+                            JOptionPane.showMessageDialog(mainScreen, "Error: You do not have the permissions to perform this operation.");
+                        }
                     }
-                    else if (result.equals(FAILED)) {
-                        JOptionPane.showMessageDialog(mainScreen, "Error: Unable to create user. Please try again later.");
+                    else{
+                        if (editing){
+                            JOptionPane.showMessageDialog(mainScreen, "Error: All fields need to be populated in order to update user.");
+                        }else {
+                            JOptionPane.showMessageDialog(mainScreen, "Error: All fields need to be populated in order to create user.");
+                        }
                     }
-                    else {
-                        JOptionPane.showMessageDialog(mainScreen, "Error: You do not have the permissions to perform this operation.");
-                    }
-                }
-                else{
-                    JOptionPane.showMessageDialog(mainScreen, "Error: All fields need to be populated in order to create user.");
-                }
             }
         });
 
@@ -106,6 +124,7 @@ public class UserManagementWindow {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (userList.getSelectedValue() != null){
+                    editing = true;
                     editModeON();
                     setEditPropertiesText();
                 }else {
