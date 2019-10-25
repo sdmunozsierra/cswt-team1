@@ -1,4 +1,6 @@
 import cswt.Ticket;
+import cswt.TicketSnapshot;
+import server.TicketHistoryStorer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -8,6 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+
+import static client.ClientHandler.SUCCESSFUL;
 
 public class HistoryScreen {
     public JPanel mainScreen;
@@ -26,16 +30,8 @@ public class HistoryScreen {
     private static List<Ticket> history = new ArrayList();
     private static DefaultListModel historyModel = new DefaultListModel();
 
-    String dummyData1 = "7:00 PM     10/23/19     Mark: marked as Closed";
-    String dummyData2 = "6:30 PM     10/23/19     Omar: marked as Fixed";
-    String dummyData3 = "6:00 PM     10/23/19     Liliana: marked as Open";
 
     public HistoryScreen(){
-
-        // temporary
-        historyModel.addElement(dummyData1);
-        historyModel.addElement(dummyData2);
-        historyModel.addElement(dummyData3);
         ticketHistoryList.setModel(historyModel);
 
         createModel();
@@ -47,8 +43,18 @@ public class HistoryScreen {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() ==2 ){
                     Ticket t = tickets.get(historyList.getSelectedIndex());
+                    String id = t.getId();
+                    if ((MainWindow.clientHandler.collectTicketHistory(id)).equals(SUCCESSFUL)) {
+                        List<TicketSnapshot> snapshots = MainWindow.clientHandler.getTicketHistory();
+                        for (TicketSnapshot snapshot: snapshots) {
+                            historyModel.addElement(snapshot.getDateModified() + " " + snapshot.getModifier() + " : " + snapshot.getWhatModified());
+                        }
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Unable to load history. Please try again later.");
+                    }
                     ticketName.setText(t.getTitle());
-                   showHistory();
+                    showHistory();
                 }
             }
         });
@@ -98,6 +104,7 @@ public class HistoryScreen {
     }
 
     private void hideHistory(){
+        historyModel.clear();
         ticketHistory.setVisible(false);
         historyViewManagement.setVisible(true);
     }

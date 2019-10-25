@@ -111,7 +111,7 @@ public class ClientHandler {
         if (currentUserType.equals(TICKET_ADMIN)) {
           return INVALID;
         }
-        String sendJson = "{\"request\": " + CREATE_TICKET + ", \"title\": \"" + ticket.getTitle() + ", \"modifier\": \"" + currentUser +
+        String sendJson = "{\"request\": " + CREATE_TICKET + ", \"title\": \"" + ticket.getTitle() + "\", \"modifier\": \"" + currentUser +
                 "\", \"description\": \"" + ticket.getDescription() + "\", \"client\": \"" + ticket.getClient() + "\", \"severity\": \"" +
                 ticket.getSeverity() + "\", \"priority\": \"" + ticket.getPriority() + "\", \"assignedTo\": \"" + ticket.getAssignedTo() + "\"}";
         wrtr.write(sendJson);
@@ -135,6 +135,7 @@ public class ClientHandler {
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
+        System.out.print(message);
         if (message.getString("response").equals(SUCCESSFUL)) {
             String recent = message.getString("hash");
             return recent.equals(Integer.toString(ticketManager.getTicket(id).hashCode()));
@@ -178,7 +179,7 @@ public class ClientHandler {
         if (!isTicketEditable(id)) {
             return OLD;
         }
-        String sendJson = "{\"request\": " + OPEN_TICKET + ", \"id\": \"" + id + ", \"modifier\": \"" + currentUser +
+        String sendJson = "{\"request\": " + OPEN_TICKET + ", \"id\": \"" + id + "\", \"modifier\": \"" + currentUser +
                             "\", \"priority\": \"" + priority + "\", \"assignedTo\": \"" + assignedTo + "\"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
@@ -203,7 +204,7 @@ public class ClientHandler {
         if (!isTicketEditable(id)) {
             return OLD;
         }
-        String sendJson = "{\"request\": " + CLOSE_TICKET + ", \"id\": \"" + id + ", \"modifier\": \"" + currentUser +"\"}";
+        String sendJson = "{\"request\": " + CLOSE_TICKET + ", \"id\": \"" + id + "\", \"modifier\": \"" + currentUser +"\"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
@@ -232,7 +233,7 @@ public class ClientHandler {
             return OLD;
         }
         String sendJson = "{\"request\": " + MARK_TICKET_AS_FIXED + ", \"id\": \"" + id + "\", \"resolution\": \"" + resolution +
-                            ", \"modifier\": \"" + currentUser +"\"}";
+                            "\", \"modifier\": \"" + currentUser +"\"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
@@ -256,7 +257,7 @@ public class ClientHandler {
         if (!isTicketEditable(id)) {
             return OLD;
         }
-        String sendJson = "{\"request\": " + REJECT_TICKET + ", \"id\": \"" + id + ", \"modifier\": \"" + currentUser +"\"}";
+        String sendJson = "{\"request\": " + REJECT_TICKET + ", \"id\": \"" + id + "\", \"modifier\": \"" + currentUser +"\"}";
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
@@ -292,7 +293,7 @@ public class ClientHandler {
         String assignedTo = ticket.getAssignedTo();
         String resolution = ticket.getResolution();
         String sendJson = "{\"request\": " + EDIT_TICKET + ", \"resolution\": \"" + resolution + "\", \"description\": \"" +
-        		description + "\", \"client\": \"" + client + "\", \"severity\": \"" + severity + ", \"modifier\": \"" + currentUser +
+        		description + "\", \"client\": \"" + client + "\", \"severity\": \"" + severity + "\", \"modifier\": \"" + currentUser +
         		"\", \"priority\": \"" + priority + "\", \"assignedTo\": \"" + assignedTo + "\", \"title\": \"" + title +
         		"\", \"id\": \"" + ticket.getId() +"\"}";
         wrtr.write(sendJson);
@@ -385,7 +386,7 @@ public class ClientHandler {
 
     public synchronized String collectTicketHistory(String id) {
         ticketHistory.clear();
-        String sendJson = "{\"request\": " + GET_TICKET_HISTORY + ", \"modifier\": \"" + currentUser + ", \"id\": \"" + id +"}";
+        String sendJson = "{\"request\": " + GET_TICKET_HISTORY + ", \"modifier\": \"" + currentUser + "\", \"id\": \"" + id +"\"}";
         wrtr.write(sendJson);
         while (true) {
             String retrievedJSON = rdr.read();

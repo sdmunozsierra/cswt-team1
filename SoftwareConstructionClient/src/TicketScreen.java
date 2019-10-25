@@ -114,7 +114,7 @@ public class TicketScreen {
             public void actionPerformed(ActionEvent actionEvent) {
                 if(ticketList.getSelectedValue() != null){
                     Ticket t = tickets.get(ticketList.getSelectedIndex());
-                    if (SUCCESSFUL == MainWindow.clientHandler.openTicket(t.getId(),t.getPriority(),t.getAssignedTo())) {
+                    if (SUCCESSFUL.equals(MainWindow.clientHandler.openTicket(t.getId(),t.getPriority(),t.getAssignedTo()))) {
                         tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
                         clear();
                         createModel();
@@ -339,7 +339,6 @@ public class TicketScreen {
             editButton.setVisible(false);
         }
         else{
-            historyButton.setVisible(false);
             manageUsersButton.setVisible(false);
         }
     }
