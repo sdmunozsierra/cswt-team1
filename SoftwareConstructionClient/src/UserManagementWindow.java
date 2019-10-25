@@ -65,6 +65,7 @@ public class UserManagementWindow {
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
+                usernameText.setEditable(true);
                 editModeON();
             }
         });
@@ -98,6 +99,7 @@ public class UserManagementWindow {
                             clear();
                             editModeOFF();
                             editing = false;
+                            usernameText.setEditable(true);
                         }
                         else if (result.equals(FAILED)) {
                             if (editing){
@@ -127,6 +129,7 @@ public class UserManagementWindow {
                     editing = true;
                     editModeON();
                     setEditPropertiesText();
+                    usernameText.setEditable(false);
                 }else {
                     JOptionPane.showMessageDialog(mainScreen, "Error: Select user to edit.");
                 }

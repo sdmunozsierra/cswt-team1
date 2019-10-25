@@ -1,9 +1,118 @@
+import cswt.Ticket;
+
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HistoryScreen {
     public JPanel mainScreen;
     public JPanel historyViewManagement;
     public JComboBox filter;
     public JList historyList;
+    private JList ticketHistoryList;
+    private JLabel ticketName;
+    private JPanel ticketHistory;
+    private JButton backButton;
+    private JTextField historySearchBar;
 
+    private static List<Ticket> tickets = new ArrayList();
+    private static DefaultListModel managementModel = new DefaultListModel();
+
+    private static List<Ticket> history = new ArrayList();
+    private static DefaultListModel historyModel = new DefaultListModel();
+
+    String dummyData1 = "7:00 PM     10/23/19     Mark: marked as Closed";
+    String dummyData2 = "6:30 PM     10/23/19     Omar: marked as Fixed";
+    String dummyData3 = "6:00 PM     10/23/19     Liliana: marked as Open";
+
+    public HistoryScreen(){
+
+        // temporary
+        historyModel.addElement(dummyData1);
+        historyModel.addElement(dummyData2);
+        historyModel.addElement(dummyData3);
+        ticketHistoryList.setModel(historyModel);
+
+        createModel();
+        historyList.setModel(managementModel);
+        ticketHistory.setVisible(false);
+
+        historyList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() ==2 ){
+                    Ticket t = tickets.get(historyList.getSelectedIndex());
+                    ticketName.setText(t.getTitle());
+                   showHistory();
+                }
+            }
+        });
+
+        backButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                hideHistory();
+            }
+        });
+
+        historySearchBar.getDocument().addDocumentListener(new DocumentListener()
+        {
+            public void changedUpdate(DocumentEvent arg0) { }
+            public void insertUpdate(DocumentEvent arg0) { search(); }
+            public void removeUpdate(DocumentEvent arg0)
+            {
+                search();
+            }
+        });
+    }
+
+    private static void createModel(){
+        managementModel.clear();
+        tickets.clear();
+        for (Ticket ticket: MainWindow.clientHandler.getAllTickets()){
+            managementModel.addElement(ticket.getTitle());
+            tickets.add(ticket);
+        }
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+        ImageIcon img = new ImageIcon("back_arrow.png");
+        Image image = img.getImage(); // transform it
+        Image newImg = image.getScaledInstance(20, 10,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+        img = new ImageIcon(newImg);
+        backButton = new JButton(img);
+        backButton.setFocusable(false);
+
+    }
+
+    private void showHistory(){
+        ticketHistory.setVisible(true);
+        historyViewManagement.setVisible(false);
+
+    }
+
+    private void hideHistory(){
+        ticketHistory.setVisible(false);
+        historyViewManagement.setVisible(true);
+    }
+
+    private void search() {
+        DefaultListModel matching = new DefaultListModel();
+
+        String word = historySearchBar.getText();
+        for (int i = 0; i < historyModel.getSize(); i++){
+            String temp = historyModel.elementAt(i).toString();
+
+            if (temp.contains(word)){
+                matching.addElement(historyModel.elementAt(i));
+            }
+        }
+        ticketHistoryList.setModel(matching);
+    }
 }

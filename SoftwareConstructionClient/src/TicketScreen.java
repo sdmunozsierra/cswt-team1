@@ -50,6 +50,7 @@ public class TicketScreen {
     private JToolBar toolbar;
     private JButton historyButton;
     private JButton manageUsersButton;
+    private JButton signOutButton;
 
     private static List<Ticket> tickets = new ArrayList();
     private static DefaultListModel model = new DefaultListModel();
@@ -57,20 +58,14 @@ public class TicketScreen {
 
     public TicketScreen() {
         toolbar.setFloatable(false);
-        manageUsersButton.setFocusable(false);
-        historyButton.setFocusable(false);
+        removeFocus();
         makeInvisible();
         hideEditProperties();
         createModel();
-        filter.setFocusable(false);
-        UserManager.kindOfUser currentUser = UserManager.getCurrent().getKindOfUser();
-        if(currentUser != UserManager.kindOfUser.ticketAdmin) {
-            manageUsersButton.setVisible(false);
-        }
 
 
 
-// Listeners
+// Action Listeners
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -176,14 +171,30 @@ public class TicketScreen {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
-                String result = MainWindow.clientHandler.closeTicket(t.getId());
-                if (result.equals(SUCCESSFUL)) {
-                    tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
-                    clear();
-                    createModel();
+                if (!t.getStatus().equals("OPEN")) {
+                    JOptionPane.showMessageDialog(mainScreen, "Error: Ticket status must be 'OPEN' in order to be closed");
+                } else {
+                    String result = MainWindow.clientHandler.closeTicket(t.getId());
+                    if (result.equals(SUCCESSFUL)) {
+                        tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
+                        clear();
+                        createModel();
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
+                    }
                 }
-                else {
-                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
+            }
+        });
+
+        filter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                int i = filter.getSelectedIndex();
+                if (i != -1){
+                    filter.setFocusable(true);
+                    filter.requestFocus();
+                    searchAttribute(filter.getItemAt(i).toString());
                 }
             }
         });
@@ -202,24 +213,24 @@ public class TicketScreen {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFrame historyWindow = new JFrame("History");
-                historyWindow.setMinimumSize(new Dimension(300,500));
+                historyWindow.setMinimumSize(new Dimension(500,500));
                 historyWindow.setContentPane(new HistoryScreen().mainScreen);
                 historyWindow.setVisible(true);
             }
         }));
 
-        filter.addActionListener(new ActionListener() {
+        signOutButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                int i = filter.getSelectedIndex();
-                if (i != -1){
-                    filter.setFocusable(true);
-                    filter.requestFocus();
-                    searchAttribute(filter.getItemAt(i).toString());
-                }
+            public void actionPerformed(ActionEvent e) {
+                JComponent comp = (JComponent) e.getSource();
+                Window win = SwingUtilities.getWindowAncestor(comp);
+                win.dispose();
+                MainWindow.mainWindow.setVisible(true);
             }
         });
 
+
+// Focus Listener
         ticketSearchBar.addFocusListener(new FocusListener() {
 
             @Override
@@ -239,6 +250,7 @@ public class TicketScreen {
             }
         });
 
+// Document Listener
         ticketSearchBar.getDocument().addDocumentListener(new DocumentListener()
         {
             public void changedUpdate(DocumentEvent arg0) { }
@@ -319,6 +331,17 @@ public class TicketScreen {
         rejectButton.setVisible(false);
         closedButton.setVisible(false);
         saveButton.setVisible(false);
+
+        // if user is admin, add or edit buttons will not be available
+        UserManager.kindOfUser currentUser = UserManager.getCurrent().getKindOfUser();
+        if (currentUser == UserManager.kindOfUser.ticketAdmin){
+            addButton.setVisible(false);
+            editButton.setVisible(false);
+        }
+        else{
+            historyButton.setVisible(false);
+            manageUsersButton.setVisible(false);
+        }
     }
 
     private void hideLabels(){
@@ -471,5 +494,12 @@ public class TicketScreen {
                 tickets.add(ticket);
             }
         }
+    }
+
+    private void removeFocus(){
+        manageUsersButton.setFocusable(false);
+        historyButton.setFocusable(false);
+        filter.setFocusable(false);
+        signOutButton.setFocusable(false);
     }
 }
