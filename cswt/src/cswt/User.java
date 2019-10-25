@@ -99,4 +99,19 @@ public class User {
 				actualName.hashCode() + email.hashCode());
 	}
 
+	public static synchronized User convertToUser(JSONObject obj) {
+		try {
+			User user = new User();
+			user.setActualName(obj.getString("actualName"));
+			user.setEmail(obj.getString("email"));
+			user.setPassword(obj.getString("password"));
+			user.setType(obj.getString("type"));
+			user.setUsername(obj.getString("username"));
+			return user;
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
 }

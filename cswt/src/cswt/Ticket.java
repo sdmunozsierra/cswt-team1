@@ -196,6 +196,29 @@ public class Ticket {
 		return new JSONObject(map);
 	}
 
+	public static synchronized Ticket convertToTicket(JSONObject obj) {
+		try {
+			Ticket ticket = new Ticket();
+			ticket.setTitle(obj.getString("title"));
+			ticket.setDescription(obj.getString("description"));
+			ticket.setAssignedTo(obj.getString("assignedTo"));
+			ticket.setClient(obj.getString("client"));
+			ticket.setClosedDate(obj.getString("closedDate"));
+			ticket.setOpenedDate(obj.getString("openedDate"));
+			ticket.setPriority(obj.getString("priority"));
+			ticket.setStatus(obj.getString("status"));
+			ticket.setResolution(obj.getString("resolution"));
+			ticket.setSeverity(obj.getString("severity"));
+			ticket.setId(obj.getString("id"));
+			ticket.setTimeSpent(obj.getString("timeSpent"));
+			return ticket;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	@Override
 	public int hashCode() {
 		return (title.hashCode() + description.hashCode() + status.hashCode() + resolution.hashCode() +

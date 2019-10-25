@@ -40,12 +40,6 @@ public class MainWindow {
                     username = usernameTextField.getText().trim();
                     password = passwordField.getText().trim();
                     if(clientHandler.validateUser(username, password).equals(SUCCESSFUL)) {
-                        JFrame ticketWindow = new JFrame("TicketScreen");
-                        ticketWindow.setContentPane(new TicketScreen().mainScreen);
-                        ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                        ticketWindow.pack();
-                        ticketWindow.setVisible(true);
-                        mainWindow.setVisible(false);
                         if (clientHandler.getCurrentUserType().equals(MANAGER)) {
                             UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
                         }
@@ -56,8 +50,14 @@ public class MainWindow {
                             UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.studentSupport);
                         }
                         else {
-                            UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.manager);
+                            UserManager.getCurrent().setKindOfUser(UserManager.kindOfUser.studentSupport);
                         }
+                        JFrame ticketWindow = new JFrame("TicketScreen");
+                        ticketWindow.setContentPane(new TicketScreen().mainScreen);
+                        ticketWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                        ticketWindow.pack();
+                        ticketWindow.setVisible(true);
+                        mainWindow.setVisible(false);
                         TicketScreen.createModel();
                     }
                     else {

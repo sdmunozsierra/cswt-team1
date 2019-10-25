@@ -13,6 +13,8 @@ import org.json.JSONTokener;
 
 import cswt.Ticket;
 
+import static cswt.Ticket.convertToTicket;
+
 public class TicketStorer {
 	public static String TICKET_DIR = Paths.get(System.getProperty("user.dir"), "tickets").toString();
 	private FileWriter writer;
@@ -30,11 +32,13 @@ public class TicketStorer {
 	public synchronized List<Ticket> loadTickets() {
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		File folder = new File(TICKET_DIR);
-		if(folder.listFiles() != null) {
+		if (folder.listFiles() != null) {
 			for(File file : folder.listFiles()) {
-				if((file.getName()).contains(".json") && readTicketFromFile(file) != null) {
+				if(file.getName().contains(".json")) {
 					Ticket ticket = readTicketFromFile(file);
-					tickets.add(ticket);
+					if (ticket != null) {
+						tickets.add(ticket);
+					}
 				}
 			}
 		}
@@ -51,7 +55,7 @@ public class TicketStorer {
 		 	JSONTokener parser = new JSONTokener(reader);
 		 	JSONObject obj = (JSONObject) parser.nextValue();
 		 	JSONObject itemJSON = (JSONObject) obj;
-		 	Ticket ticket = fromJSON(itemJSON);
+		 	Ticket ticket = convertToTicket(itemJSON);
 		 	reader.close();
 		 	return ticket;
 		 }
@@ -87,31 +91,6 @@ public class TicketStorer {
 		writer.write((ticket.toJSON()).toString());
 		writer.close();
 	}
-	
-	/** Parses an item from a JSONObject 
-	 * @param obj The JSONObject to be parsed
-	 * */
-	private synchronized Ticket fromJSON(JSONObject obj) {
-		try {
-		    Ticket ticket = new Ticket();
-		    ticket.setTitle(obj.getString("title"));
-		    ticket.setDescription(obj.getString("description"));
-		    ticket.setAssignedTo(obj.getString("assignedTo"));
-		    ticket.setClient(obj.getString("client"));
-		    ticket.setClosedDate(obj.getString("closedDate"));
-		    ticket.setOpenedDate(obj.getString("openedDate"));
-		    ticket.setPriority(obj.getString("priority"));
-		    ticket.setStatus(obj.getString("status"));
-		    ticket.setResolution(obj.getString("resolution"));
-		    ticket.setSeverity(obj.getString("severity"));
-		    ticket.setId(obj.getString("id"));
-		    ticket.setTimeSpent(obj.getString("timeSpent"));
-		    return ticket;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+
 
 }

@@ -13,6 +13,8 @@ import org.json.JSONTokener;
 
 import cswt.User;
 
+import static cswt.User.convertToUser;
+
 public class UserStorer {
 	private FileWriter writer;
 	public static String USER_DIR = Paths.get(System.getProperty("user.dir"), "users").toString();
@@ -34,7 +36,7 @@ public class UserStorer {
 		 	JSONTokener parser = new JSONTokener(reader);
 		 	JSONObject obj = (JSONObject) parser.nextValue();
 		 	JSONObject itemJSON = (JSONObject) obj;
-		 	User user = fromJSON(itemJSON);
+		 	User user = convertToUser(itemJSON);
 		 	reader.close();
 		 	return user;
 		 }
@@ -94,24 +96,4 @@ public class UserStorer {
 		File file = new File(Paths.get(USER_DIR, username + ".json").toString());
 		file.delete();
 	}
-	
-	/** Parses an user from a JSONObject 
-	 * @param obj The JSONObject to be parsed
-	 * @return The parsed User
-	 * */
-	private synchronized User fromJSON(JSONObject obj) {
-		try {
-		    User user = new User();
-		    user.setActualName(obj.getString("actualName"));
-		    user.setEmail(obj.getString("email"));
-		    user.setPassword(obj.getString("password"));
-		    user.setType(obj.getString("type"));
-		    user.setUsername(obj.getString("username"));
-		    return user;
-		}
-		catch (Exception e) {
-			return null;
-		}
-	}
-
 }

@@ -1,6 +1,7 @@
 package server;
 
 import cswt.Ticket;
+import cswt.TicketSnapshot;
 import cswt.User;
 import json.JSONPacketReader;
 import json.JSONPacketWriter;
@@ -37,6 +38,7 @@ public class ServerHandler {
     private static final String GET_TICKET_HASH = "Get ticket hash";
     private static final String GET_USER_HASH = "Get user hash";
     private static final String GET_RECENT_TICKETS = "Get recent tickets";
+    private static final String GET_TICKET_HISTORY = "Get ticket history";
     private static final String SUCCESSFUL = "Successful";
     private static final String FAILED = "Failed";
     private static final String COMPLETE = "Complete";
@@ -53,6 +55,7 @@ public class ServerHandler {
     private static ServerSocket server;
     private static ServerTicketManager serverTicketManager = new ServerTicketManager();
     private static ServerUserManager serverUserManager = new ServerUserManager();
+    private static TicketHistoryStorer ticketHistoryStorer = new TicketHistoryStorer();
     private static final String key = "77789BXarcy77777";
     private static Cipher encrypt;
     private static Cipher decrypt;
@@ -115,9 +118,11 @@ public class ServerHandler {
             String severity =  message.getString("severity");
             String assignedTo = message.getString("assignedTo");
             String priority = message.getString("priority");
+            String modifier = message.getString("modifier");
             Ticket ticket = serverTicketManager.createTicket(title, description, client, severity, assignedTo, priority);
             if (ticket != null) {
                 String ticketString = ticket.toJSON().toString();
+                ticketHistoryStorer.updateTicketHistory(ticket, modifier, CREATE_TICKET);
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
             else {
@@ -160,8 +165,12 @@ public class ServerHandler {
             String severity =  message.getString("severity");
             String assignedTo = message.getString("assignedTo");
             String priority = message.getString("priority");
+            String modifier = message.getString("modifier");
+            Ticket original = serverTicketManager.getTicket(id);
             Ticket ticket = serverTicketManager.editTicket(id, title, description, resolution, client, severity, assignedTo, priority);
             if (ticket != null) {
+                String whatModified = ticketHistoryStorer.determineDifference(original, ticket);
+                ticketHistoryStorer.updateTicketHistory(ticket, modifier, whatModified);
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
@@ -174,8 +183,10 @@ public class ServerHandler {
             String id = message.getString("id");
             String priority = message.getString("priority");
             String assignedTo = message.getString("assignedTo");
+            String modifier = message.getString("modifier");
             Ticket ticket = serverTicketManager.openTicket(id, priority, assignedTo);
             if (ticket != null) {
+                ticketHistoryStorer.updateTicketHistory(ticket, modifier, OPEN_TICKET);
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
@@ -188,8 +199,10 @@ public class ServerHandler {
         private synchronized static void markTicketAsFixed(JSONObject message) {
             String id = message.getString("id");
             String resolution = message.getString("resolution");
+            String modifier = message.getString("modifier");
             Ticket ticket = serverTicketManager.markTicketAsFixed(id, resolution);
             if (ticket != null) {
+                ticketHistoryStorer.updateTicketHistory(ticket, modifier, MARK_TICKET_AS_FIXED);
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
@@ -200,8 +213,10 @@ public class ServerHandler {
 
         private synchronized static void closeTicket(JSONObject message) {
             String id = message.getString("id");
+            String modifier = message.getString("modifier");
             Ticket ticket = serverTicketManager.closeTicket(id);
             if (ticket != null) {
+                ticketHistoryStorer.updateTicketHistory(ticket, modifier, CLOSE_TICKET);
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
@@ -212,8 +227,10 @@ public class ServerHandler {
 
         private synchronized static void rejectTicket(JSONObject message) {
             String id = message.getString("id");
+            String modifier = message.getString("modifier");
             Ticket ticket = serverTicketManager.rejectTicket(id);
             if (ticket != null) {
+                ticketHistoryStorer.updateTicketHistory(ticket, modifier, REJECT_TICKET);
                 String ticketString = ticket.toJSON().toString();
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
@@ -232,6 +249,21 @@ public class ServerHandler {
             else {
                 wrtr.write("{\"response\":" + FAILED + "}");
             }
+        }
+
+        private synchronized static void getTicketHistory(JSONObject message) {
+            List<TicketSnapshot> history;
+            String id = message.getString("id");
+            history = ticketHistoryStorer.loadTicketHistory(id);
+            if (history != null) {
+                for (TicketSnapshot ticketSnapshot : history) {
+                    String snapshotString = ticketSnapshot.toJSON().toString();
+                    wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + snapshotString +"}");
+                }
+                wrtr.write("{\"response\":" + COMPLETE + "}");
+            }
+            wrtr.write("{\"response\":" + FAILED + "}");
+
         }
 
         private synchronized static void searchTickets(JSONObject message) {
@@ -386,6 +418,7 @@ public class ServerHandler {
                         else if (method.equals(GET_ALL_USERS)) getAllUsers();
                         else if (method.equals(GET_TICKET_HASH)) getTicketHashCode(message);
                         else if (method.equals(GET_USER_HASH)) getUserHashCode(message);
+                        else if (method.equals(GET_TICKET_HISTORY)) getTicketHistory(message);
                     }
                     else {
                         cont = false;

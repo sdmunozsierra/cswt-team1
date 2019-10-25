@@ -63,6 +63,10 @@ public class TicketScreen {
         hideEditProperties();
         createModel();
         filter.setFocusable(false);
+        UserManager.kindOfUser currentUser = UserManager.getCurrent().getKindOfUser();
+        if(currentUser != UserManager.kindOfUser.ticketAdmin) {
+            manageUsersButton.setVisible(false);
+        }
 
 
 
@@ -172,18 +176,14 @@ public class TicketScreen {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
-                if (!t.getStatus().equals("OPEN")) {
-                    JOptionPane.showMessageDialog(mainScreen, "Error: Ticket status must be 'OPEN' in order to be closed");
-                } else {
-                    String result = MainWindow.clientHandler.closeTicket(t.getId());
-                    if (result.equals(SUCCESSFUL)) {
-                        tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
-                        clear();
-                        createModel();
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
-                    }
+                String result = MainWindow.clientHandler.closeTicket(t.getId());
+                if (result.equals(SUCCESSFUL)) {
+                    tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
+                    clear();
+                    createModel();
+                }
+                else {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
                 }
             }
         });
