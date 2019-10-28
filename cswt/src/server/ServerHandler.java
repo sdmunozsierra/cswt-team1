@@ -97,11 +97,11 @@ public class ServerHandler {
 
     public static class ServerThread extends Thread {
 
-        private static Socket socket;
-        private static DataInputStream ois;
-        private static DataOutputStream oos;
-        private static JSONReader rdr;
-        private static JSONWriter wrtr;
+        private Socket socket;
+        private DataInputStream ois;
+        private DataOutputStream oos;
+        private JSONReader rdr;
+        private JSONWriter wrtr;
 
         public ServerThread(Socket socket) throws IOException{
             this.socket = socket;
@@ -111,7 +111,7 @@ public class ServerHandler {
             wrtr = new JSONPacketWriter(oos, ENCODING);
         }
 
-        private synchronized static void createTicket(JSONObject message) {
+        private synchronized void createTicket(JSONObject message) {
             String title = message.getString("title");
             String description = message.getString("description");
             String client = message.getString("client");
@@ -130,7 +130,7 @@ public class ServerHandler {
             }
         }
 
-        private synchronized static void getTicketHashCode(JSONObject message) {
+        private synchronized void getTicketHashCode(JSONObject message) {
             String id = message.getString("id");
             Ticket ticket = serverTicketManager.getTicket(id);
             if (ticket != null) {
@@ -141,7 +141,7 @@ public class ServerHandler {
             }
         }
 
-        private synchronized static void getUserHashCode(JSONObject message) {
+        private synchronized void getUserHashCode(JSONObject message) {
             String username = decodeMessage(message.getString("username"));
             User user = serverUserManager.getUser(username);
             if (user != null) {
@@ -156,7 +156,7 @@ public class ServerHandler {
             }
         }
 
-        private synchronized static void editTicket(JSONObject message) {
+        private synchronized void editTicket(JSONObject message) {
             String id = message.getString("id");
             String resolution = message.getString("resolution");
             String title = message.getString("title");
@@ -179,7 +179,7 @@ public class ServerHandler {
             }
         }
 
-        private synchronized static void openTicket(JSONObject message) {
+        private synchronized void openTicket(JSONObject message) {
             String id = message.getString("id");
             String priority = message.getString("priority");
             String assignedTo = message.getString("assignedTo");
@@ -196,7 +196,7 @@ public class ServerHandler {
         }
 
 
-        private synchronized static void markTicketAsFixed(JSONObject message) {
+        private synchronized void markTicketAsFixed(JSONObject message) {
             String id = message.getString("id");
             String resolution = message.getString("resolution");
             String modifier = message.getString("modifier");
@@ -211,7 +211,7 @@ public class ServerHandler {
             }
         }
 
-        private synchronized static void closeTicket(JSONObject message) {
+        private synchronized void closeTicket(JSONObject message) {
             String id = message.getString("id");
             String modifier = message.getString("modifier");
             Ticket ticket = serverTicketManager.closeTicket(id);
@@ -225,7 +225,7 @@ public class ServerHandler {
             }
         }
 
-        private synchronized static void rejectTicket(JSONObject message) {
+        private synchronized void rejectTicket(JSONObject message) {
             String id = message.getString("id");
             String modifier = message.getString("modifier");
             Ticket ticket = serverTicketManager.rejectTicket(id);
@@ -239,7 +239,7 @@ public class ServerHandler {
             }
         }
 
-        private synchronized static void updateTicket(JSONObject message) {
+        private synchronized void updateTicket(JSONObject message) {
             String id = message.getString("id");
             Ticket ticket = serverTicketManager.getTicket(id);
             if (ticket != null) {
@@ -251,7 +251,7 @@ public class ServerHandler {
             }
         }
 
-        private synchronized static void getTicketHistory(JSONObject message) {
+        private synchronized void getTicketHistory(JSONObject message) {
             List<TicketSnapshot> history;
             String id = message.getString("id");
             history = ticketHistoryStorer.loadTicketHistory(id);
@@ -266,7 +266,7 @@ public class ServerHandler {
 
         }
 
-        private synchronized static void searchTickets(JSONObject message) {
+        private synchronized void searchTickets(JSONObject message) {
             List<Ticket> validTickets = new ArrayList<Ticket>();
             String title = message.getString("title");
             String description = message.getString("description");
