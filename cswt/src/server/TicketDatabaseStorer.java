@@ -1,12 +1,11 @@
 package server;
 
-import cswt.Ticket;
-
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import cswt.Ticket;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.json.JsonMode;
@@ -29,9 +28,8 @@ import static com.mongodb.client.model.Updates.set;
  */
 public class TicketDatabaseStorer {
 
-    private final String TICKET_DATABASE = "Tickets";
+    private final String DATABASE_NAME = "Database";
     private final String TICKET_COLLECTION = "TicketCollection";
-    private final String USER_COLLECTION = "UserCollection";
     private final MongoClientURI DATABASEURI = new MongoClientURI(
             "mongodb+srv://root:admin@cluster0-bcwly.azure.mongodb.net/test?retryWrites=true&w=majority");
     private MongoClient mongoClient;
@@ -43,8 +41,8 @@ public class TicketDatabaseStorer {
      */
     public TicketDatabaseStorer() {
         mongoClient = new MongoClient(DATABASEURI);
-        database = mongoClient.getDatabase("Tickets");
-        collection = database.getCollection("Doesntexist");
+        database = mongoClient.getDatabase(DATABASE_NAME);
+        collection = database.getCollection(TICKET_COLLECTION);
     }
 
     /*
@@ -66,6 +64,7 @@ public class TicketDatabaseStorer {
     /**
      * Takes the collection of tickets in the database and
      * converts them to Ticket objects
+     *
      * @return List of Tickets
      */
     public List<Ticket> loadTicketsFromDatabase() {
@@ -80,6 +79,7 @@ public class TicketDatabaseStorer {
 
     /**
      * Stores ticket in the database collection of Tickets.
+     *
      * @param ticket being stored
      */
     public void storeTicket(Ticket ticket) {
