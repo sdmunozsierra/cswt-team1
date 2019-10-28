@@ -54,11 +54,10 @@ public class TicketDatabaseStorer {
      * @return
      */
     private boolean ticketInDatabase(Ticket ticket) {
-        JSONObject jsonTicket = ticket.toJSON();
         FindIterable<Document> names = collection.find();
         for (Document document : names) {
 //            System.out.println(document.toString());
-            if (document.getString("id").equals(jsonTicket.getString("id")))
+            if (document.getString("id").equals(ticket.getId()))
                 return true;
         }
         return false;
@@ -95,20 +94,19 @@ public class TicketDatabaseStorer {
      * @param ticket
      */
     private synchronized void updateTicketInDatabase(Ticket ticket) {
-        JSONObject jsonTicket = ticket.toJSON();
-        Bson filter = eq("id", jsonTicket.getString("id"));
+        Bson filter = eq("id", ticket.getId());
         Bson query = combine(
-                set("title", jsonTicket.getString("title")),
-                set("description", jsonTicket.getString("description")),
-                set("assignedTo", jsonTicket.getString("assignedTo")),
-                set("client", jsonTicket.getString("client")),
-                set("closedDate", jsonTicket.getString("closedDate")),
-                set("openedDate", jsonTicket.getString("openedDate")),
-                set("priority", jsonTicket.getString("priority")),
-                set("status", jsonTicket.getString("status")),
-                set("resolution", jsonTicket.getString("resolution")),
-                set("severity", jsonTicket.getString("severity")),
-                set("timeSpent", jsonTicket.getString("timeSpent")));
+                set("title", ticket.getTitle()),
+                set("description", ticket.getDescription()),
+                set("assignedTo", ticket.getAssignedTo()),
+                set("client", ticket.getClient()),
+                set("closedDate", ticket.getClosedDate()),
+                set("openedDate", ticket.getOpenedDate()),
+                set("priority", ticket.getPriority()),
+                set("status", ticket.getStatus()),
+                set("resolution", ticket.getResolution()),
+                set("severity", ticket.getSeverity()),
+                set("timeSpent", ticket.getTimeSpent()));
         collection.findOneAndUpdate(filter, query);
     }
 
@@ -149,20 +147,19 @@ public class TicketDatabaseStorer {
      * @return
      */
     private synchronized Document fromTicketToDocument(Ticket ticket) {
-        JSONObject ticketJSON = ticket.toJSON();
         Document document = new Document()
-                .append("title", ticketJSON.getString("title"))
-                .append("description", ticketJSON.getString("description"))
-                .append("assignedTo", ticketJSON.getString("assignedTo"))
-                .append("client", ticketJSON.getString("client"))
-                .append("closedDate", ticketJSON.getString("closedDate"))
-                .append("openedDate", ticketJSON.getString("openedDate"))
-                .append("priority", ticketJSON.getString("priority"))
-                .append("status", ticketJSON.getString("status"))
-                .append("resolution", ticketJSON.getString("resolution"))
-                .append("severity", ticketJSON.getString("severity"))
-                .append("id", ticketJSON.getString("id"))
-                .append("timeSpent", ticketJSON.getString("timeSpent"));
+                .append("title", ticket.getTitle())
+                .append("description", ticket.getDescription())
+                .append("assignedTo", ticket.getAssignedTo())
+                .append("client", ticket.getClient())
+                .append("closedDate", ticket.getClosedDate())
+                .append("openedDate", ticket.getOpenedDate())
+                .append("priority", ticket.getPriority())
+                .append("status", ticket.getStatus())
+                .append("resolution", ticket.getResolution())
+                .append("severity", ticket.getSeverity())
+                .append("id", ticket.getId())
+                .append("timeSpent", ticket.getTimeSpent());
         return document;
     }
 

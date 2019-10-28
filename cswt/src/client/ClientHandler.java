@@ -135,7 +135,6 @@ public class ClientHandler {
         wrtr.write(sendJson);
         String retrievedJSON = rdr.read();
         JSONObject message = new JSONObject(retrievedJSON);
-        System.out.print(message);
         if (message.getString("response").equals(SUCCESSFUL)) {
             String recent = message.getString("hash");
             return recent.equals(Integer.toString(ticketManager.getTicket(id).hashCode()));
@@ -469,6 +468,9 @@ public class ClientHandler {
     public synchronized String editUser(String username, String password, String type, String actualName, String email) {
         if (!currentUserType.equals(TICKET_ADMIN)) {
             return INVALID;
+        }
+        if (!isUserEditable(username)) {
+            return OLD;
         }
         String sendJson = "{\"request\": " + EDIT_USER + ", \"username\": \"" + encodeMessage(username) + "\", \"password\": \"" + encodeMessage(password) + "\", \"type\": \"" + encodeMessage(type) + "\", \"actualName\": \"" + encodeMessage(actualName) + "\", \"email\": \"" + encodeMessage(email) + "\"}";
         wrtr.write(sendJson);

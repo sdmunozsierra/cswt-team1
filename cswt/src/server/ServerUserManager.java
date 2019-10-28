@@ -9,11 +9,11 @@ public class ServerUserManager {
 	
 	private List<User> users;
 	private List<String> usernames;
-	private UserStorer storer;
+	private UserDatabaseStorer storer;
 	
 	public ServerUserManager() {
-		this.storer = new UserStorer();
-		this.users = this.storer.loadUsers();
+		this.storer = new UserDatabaseStorer();
+		this.users = this.storer.loadUsersFromDatabase();
 		getUsernames();
 	}
 	
@@ -53,11 +53,8 @@ public class ServerUserManager {
 		user.setEmail(email);
 		user.setPassword(password);
 		user.setType(type);
-		boolean updated = this.storer.storeUser(user);
-		if (updated) {
-			return user;
-		}
-		return null;
+		this.storer.storeUser(user);
+		return user;
 	}
 	
 	/** Checks if a user has entered the correct username and password. 
@@ -80,9 +77,7 @@ public class ServerUserManager {
 	 * @return If the manager was able to add the user
 	 * */
 	private boolean addUser(User user) {
-		if(!this.storer.storeUser(user)) {
-			return false;
-		}
+		this.storer.storeUser(user);
 		this.users.add(user);
 		this.usernames.add(user.getUsername());
 		return true;
@@ -135,7 +130,7 @@ public class ServerUserManager {
 	/** Sets the storer for the users
 	 * @param storer The storer to be set
 	 * */
-	public synchronized  void setStorer(UserStorer storer) {
+	public synchronized  void setStorer(UserDatabaseStorer storer) {
 		this.storer = storer;
 	}
 	

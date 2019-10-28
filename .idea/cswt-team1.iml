@@ -17,8 +17,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="mail-1.4" level="project" />
-    <orderEntry type="library" name="activation-1.1" level="project" />
     <orderEntry type="module-library">
       <library name="JUnit4">
         <CLASSES>
@@ -40,6 +38,9 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="MigLayout" level="project" />
+    <orderEntry type="library" name="bson-3.11.0" level="project" />
+    <orderEntry type="library" name="mongodb-driver-3.11.0" level="project" />
+    <orderEntry type="library" name="mongodb-driver-core-3.11.0" level="project" />
   </component>
   <component name="sonarModuleSettings">
     <option name="localAnalysisScripName" value="&lt;PROJECT&gt;" />

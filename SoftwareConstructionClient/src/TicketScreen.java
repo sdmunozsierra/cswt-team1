@@ -114,10 +114,17 @@ public class TicketScreen {
             public void actionPerformed(ActionEvent actionEvent) {
                 if(ticketList.getSelectedValue() != null){
                     Ticket t = tickets.get(ticketList.getSelectedIndex());
-                    if (SUCCESSFUL.equals(MainWindow.clientHandler.openTicket(t.getId(),t.getPriority(),t.getAssignedTo()))) {
+                    String status = MainWindow.clientHandler.openTicket(t.getId(),t.getPriority(),t.getAssignedTo());
+                    if (SUCCESSFUL.equals(status)) {
                         tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
                         clear();
                         createModel();
+                    }
+                    else if (FAILED.equals(status)) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Operation failed. Please try again later.");
+                    }
+                    else if (OLD.equals(status)) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Refresh ticket and try again.");
                     }
                     else {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
@@ -132,13 +139,17 @@ public class TicketScreen {
             public void actionPerformed(ActionEvent actionEvent) {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
 
-                String result = MainWindow.clientHandler.markTicketAsFixed(t.getId(),resolutionTextPane.getText());
-                if (result.equals(SUCCESSFUL)) {
+                String status = MainWindow.clientHandler.markTicketAsFixed(t.getId(),resolutionTextPane.getText());
+                if (status.equals(SUCCESSFUL)) {
                     tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
                     clear();
                     createModel();
-                }else if (result.equals(FAILED)){
-                    JOptionPane.showMessageDialog(mainScreen, "Error: Resolution is empty.");
+                }
+                else if (FAILED.equals(status)) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Operation failed. Please try again later.");
+                }
+                else if (OLD.equals(status)) {
+                    JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Refresh ticket and try again.");
                 }
                 else {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
@@ -152,12 +163,19 @@ public class TicketScreen {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
                 if (!t.getStatus().equals("NEW")){
                     JOptionPane.showMessageDialog(mainScreen, "Error: Cannot reject ticket that is not new.");
-                }else {
-                    String result = MainWindow.clientHandler.rejectTicket(t.getId());
-                    if (result.equals(SUCCESSFUL)){
+                }
+                else {
+                    String status = MainWindow.clientHandler.rejectTicket(t.getId());
+                    if (status.equals(SUCCESSFUL)){
                         tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
                         clear();
                         createModel();
+                    }
+                    else if (FAILED.equals(status)) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Operation failed. Please try again later.");
+                    }
+                    else if (OLD.equals(status)) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Refresh ticket and try again.");
                     }
                     else {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");
@@ -173,12 +191,19 @@ public class TicketScreen {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
                 if (!t.getStatus().equals("OPEN")) {
                     JOptionPane.showMessageDialog(mainScreen, "Error: Ticket status must be 'OPEN' in order to be closed");
-                } else {
-                    String result = MainWindow.clientHandler.closeTicket(t.getId());
-                    if (result.equals(SUCCESSFUL)) {
+                }
+                else {
+                    String status = MainWindow.clientHandler.closeTicket(t.getId());
+                    if (status.equals(SUCCESSFUL)) {
                         tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
                         clear();
                         createModel();
+                    }
+                    else if (FAILED.equals(status)) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Operation failed. Please try again later.");
+                    }
+                    else if (OLD.equals(status)) {
+                        JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Refresh ticket and try again.");
                     }
                     else {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: You do not have the permissions to perform this operation.");

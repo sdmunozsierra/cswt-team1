@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="activation-1.1">
+  <library name="mongodb-driver-3.11.0">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/jars/activation-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jars/mongodb-driver-3.11.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

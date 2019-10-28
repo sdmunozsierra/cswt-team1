@@ -14,7 +14,7 @@ public class ServerTicketManager {
 	
 	private List<Ticket> tickets;
 	private List<String> ids;
-	private TicketStorer storer;
+	private TicketDatabaseStorer storer;
 	// Status constants
 	private static final String STATUS_NEW = "NEW";
 	private static final String STATUS_OPENED = "OPEN";
@@ -24,8 +24,8 @@ public class ServerTicketManager {
 	
 	
 	public ServerTicketManager() {
-		this.storer = new TicketStorer();
-		this.tickets = this.storer.loadTickets();
+		this.storer = new TicketDatabaseStorer();
+		this.tickets = this.storer.loadTicketsFromDatabase();
 		getIds();
 	}
 	
@@ -78,11 +78,8 @@ public class ServerTicketManager {
 		ticket.setSeverity(severity);
 		ticket.setPriority(priority);
 		ticket.setAssignedTo(assignedTo);
-		boolean updated= this.storer.storeTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
+		this.storer.storeTicket(ticket);
+		return ticket;
 	}
 
 	/** Marks a ticket as open. 
@@ -101,11 +98,8 @@ public class ServerTicketManager {
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		ticket.setOpenedDate(simpleDateFormat.format(new Date()));
 		ticket.setClosedDate("");
-		boolean updated = this.storer.storeTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
+		this.storer.storeTicket(ticket);
+		return ticket;
 	}
 	
 	/** Marks ticket as fixed and updates resolution. 
@@ -118,11 +112,8 @@ public class ServerTicketManager {
 		Ticket ticket = tickets.get(index);
 		ticket.setStatus(STATUS_FIXED);
 		ticket.setResolution(resolution);
-		boolean updated = this.storer.storeTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
+		this.storer.storeTicket(ticket);
+		return ticket;
 	}
 	
 	/** Marks a ticket as closed. 
@@ -136,11 +127,8 @@ public class ServerTicketManager {
 		String pattern = "MM/dd/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 		ticket.setClosedDate(simpleDateFormat.format(new Date()));
-		boolean updated = this.storer.storeTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
+		this.storer.storeTicket(ticket);
+		return ticket;
 	}
 	
 	/** Marks a ticket as rejected. 
@@ -151,11 +139,8 @@ public class ServerTicketManager {
 		int index = ids.indexOf(id);
 		Ticket ticket = tickets.get(index);
 		ticket.setStatus(STATUS_REJECTED);
-		boolean updated = this.storer.storeTicket(ticket);
-		if (updated) {
-			return ticket;
-		}
-		return null;
+		this.storer.storeTicket(ticket);
+		return ticket;
 	}
 	
 	/** Adds a ticket to the ticket manager. 
@@ -163,9 +148,7 @@ public class ServerTicketManager {
 	 * @return If the manager was able to add the ticket
 	 * */
 	private synchronized boolean addTicket(Ticket ticket) {
-		if(!this.storer.storeTicket(ticket)) {
-			return false;
-		}
+		this.storer.storeTicket(ticket);
 		this.tickets.add(ticket);
 		this.ids.add(ticket.getId());
 		return true;
@@ -210,7 +193,7 @@ public class ServerTicketManager {
 	/** Sets the storer for the tickets
 	 * @param storer The storer to be set
 	 * */
-	public synchronized  void setStorer(TicketStorer storer) {
+	public synchronized  void setStorer(TicketDatabaseStorer storer) {
 		this.storer = storer;
 	}
 }

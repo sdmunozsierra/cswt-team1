@@ -1,7 +1,7 @@
 <component name="libraryTable">
-  <library name="mail-1.4">
+  <library name="bson-3.11.0">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/jars/mail-1.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/jars/bson-3.11.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

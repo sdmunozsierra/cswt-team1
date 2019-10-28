@@ -52,10 +52,9 @@ public class UserDatabaseStorer {
      * @return true if User exists in collection
      */
     private boolean userInDatabase(User user) {
-        JSONObject jsonUser = user.toJSON();
         FindIterable<Document> names = collection.find();
         for (Document document : names) {
-            if (document.getString("username").equals(jsonUser.getString("username")))
+            if (document.getString("username").equals(user.getUsername()))
                 return true;
         }
         return false;
@@ -91,16 +90,24 @@ public class UserDatabaseStorer {
      * @param user
      */
     private synchronized void updateUserInDatabase(User user) {
-        JSONObject jsonUser = user.toJSON();
-        Bson filter = eq("username", jsonUser.getString("username"));
+        Bson filter = eq("username", user.getUsername());
         Bson query = combine(
-                set("username", jsonUser.getString("username")),
-                set("password", jsonUser.getString("password")),
-                set("actualName", jsonUser.getString("actualName")),
-                set("type", jsonUser.getString("type")),
-                set("email", jsonUser.getString("email")));
+                set("username", user.getUsername()),
+                set("password", user.getPassword()),
+                set("actualName", user.getActualName()),
+                set("type", user.getType()),
+                set("email", user.getEmail()));
         collection.findOneAndUpdate(filter, query);
     }
+    /*
+     * Deletes an existing user in the database
+     * @param user
+     */
+    public synchronized void deleteUser(String username) {
+        Bson filter = eq("username", username);
+        collection.deleteOne(filter);
+    }
+
 
     /*
      * Adds a new user to the database used in storeUser
@@ -134,13 +141,12 @@ public class UserDatabaseStorer {
      */
 
     private synchronized Document fromUserToDocument(User user) {
-        JSONObject userJSON = user.toJSON();
         Document document = new Document()
-                .append("username", userJSON.getString("username"))
-                .append("password", userJSON.getString("password"))
-                .append("type", userJSON.getString("type"))
-                .append("actualName", userJSON.getString("actualName"))
-                .append("email", userJSON.getString("email"));
+                .append("username", user.getUsername())
+                .append("password", user.getPassword())
+                .append("type", user.getType())
+                .append("actualName", user.getActualName())
+                .append("email", user.getEmail());
         return document;
     }
 
