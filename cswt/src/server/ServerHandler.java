@@ -166,7 +166,7 @@ public class ServerHandler {
             String assignedTo = message.getString("assignedTo");
             String priority = message.getString("priority");
             String modifier = message.getString("modifier");
-            Ticket original = serverTicketManager.getTicket(id);
+            Ticket original = serverTicketManager.getTicketAsCopy(id);
             Ticket ticket = serverTicketManager.editTicket(id, title, description, resolution, client, severity, assignedTo, priority);
             if (ticket != null) {
                 String whatModified = ticketHistoryStorer.determineDifference(original, ticket);

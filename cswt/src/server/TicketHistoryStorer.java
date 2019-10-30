@@ -68,7 +68,7 @@ public class TicketHistoryStorer {
 
     public synchronized boolean updateTicketHistory(Ticket ticket, String modifier, String whatModified) {
         try{
-            String pattern = "yyyy.MM.dd G 'at' HH:mm:ss z";
+            String pattern = "yyyy.MM.dd 'at' HH:mm:ss";
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
             TicketSnapshot history = new TicketSnapshot();
             history.setTicket(ticket);

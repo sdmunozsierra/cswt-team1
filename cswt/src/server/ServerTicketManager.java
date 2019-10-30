@@ -175,6 +175,31 @@ public class ServerTicketManager {
 		}
 		return this.tickets.get(index);
 	}
+
+	/** Gets a copy of a ticket based on provided ticket id
+	 * @param id The provided id
+	 * @return The ticket or null if no ticket with that username exists
+	 * */
+	public synchronized Ticket getTicketAsCopy(String id) {
+		int index = this.ids.indexOf(id);
+		if (index == -1) {
+			return null;
+		}
+		Ticket original = this.tickets.get(index);
+		Ticket copy = new Ticket();
+		copy.setTitle(original.getTitle());
+		copy.setId(original.getId());
+		copy.setClient(original.getClient());
+		copy.setDescription(original.getDescription());
+		copy.setAssignedTo(original.getAssignedTo());
+		copy.setPriority(original.getPriority());
+		copy.setSeverity(original.getSeverity());
+		copy.setClosedDate(original.getClosedDate());
+		copy.setOpenedDate(original.getOpenedDate());
+		copy.setStatus(original.getStatus());
+		copy.setTimeSpent(original.getTimeSpent());
+		return copy;
+	}
 	
 	/** Gets all tickets
 	 * @return The list of all tickets

@@ -189,7 +189,7 @@ public class TicketScreen {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
-                if (!t.getStatus().equals("OPEN")) {
+                if (!t.getStatus().equals("OPEN") || !t.getStatus().equals("FIXED")) {
                     JOptionPane.showMessageDialog(mainScreen, "Error: Ticket status must be 'OPEN' in order to be closed");
                 }
                 else {
