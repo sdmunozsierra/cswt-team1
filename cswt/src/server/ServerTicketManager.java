@@ -181,10 +181,9 @@ public class ServerTicketManager {
 	 * */
 	public synchronized void deleteTicket(String id) {
 		int index = this.ids.indexOf(id);
+		this.storer.deleteTicket(getTicket(id));
 		this.tickets.remove(index);
 		this.ids.remove(index);
-		this.storer.deleteTicket(getTicket(id));
-
 	}
 
 	/** Gets a copy of a ticket based on provided ticket id
