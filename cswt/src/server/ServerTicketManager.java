@@ -176,6 +176,17 @@ public class ServerTicketManager {
 		return this.tickets.get(index);
 	}
 
+	/** Removes a ticket from the manager and storage.
+	 * @param id The id of the ticket to be removed
+	 * */
+	public synchronized void deleteTicket(String id) {
+		int index = this.tickets.indexOf(id);
+		this.tickets.remove(index);
+		this.ids.remove(index);
+		this.storer.deleteTicket(getTicket(id));
+
+	}
+
 	/** Gets a copy of a ticket based on provided ticket id
 	 * @param id The provided id
 	 * @return The ticket or null if no ticket with that username exists

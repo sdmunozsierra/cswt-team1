@@ -34,6 +34,7 @@ public class ServerHandler {
     private static final String UPDATE_USER = "Update user";
     private static final String REJECT_TICKET = "Reject ticket";
     private static final String EDIT_TICKET = "Edit ticket";
+    private static final String DELETE_TICKET = "Delete ticket";
     private static final String GET_ALL_TICKETS = "Get all tickets";
     private static final String GET_TICKET_HASH = "Get ticket hash";
     private static final String GET_USER_HASH = "Get user hash";
@@ -42,6 +43,7 @@ public class ServerHandler {
     private static final String SUCCESSFUL = "Successful";
     private static final String FAILED = "Failed";
     private static final String COMPLETE = "Complete";
+    public static final String DELETED = "Deleted";
     private static final String CREATE_ACCOUNT = "Create account";
     private static final String VALIDATE_USER = "Validate user";
     private static final String EDIT_USER = "Edit user";
@@ -247,7 +249,7 @@ public class ServerHandler {
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + ticketString +"}");
             }
             else {
-                wrtr.write("{\"response\":" + FAILED + "}");
+                wrtr.write("{\"response\":" + DELETED + "}");
             }
         }
 
@@ -262,8 +264,23 @@ public class ServerHandler {
                 }
                 wrtr.write("{\"response\":" + COMPLETE + "}");
             }
-            wrtr.write("{\"response\":" + FAILED + "}");
+            else {
+                wrtr.write("{\"response\":" + FAILED + "}");
+            }
+        }
 
+        private synchronized void deleteTicket(JSONObject message) {
+            String id = message.getString("id");
+            Ticket ticket = serverTicketManager.getTicket(id);
+            if (ticket != null) {
+                serverTicketManager.deleteTicket(id);
+                if (ticketHistoryStorer.deleteTicketHistory(id)) {
+                    wrtr.write("{\"response\":" + SUCCESSFUL + "}");
+                }
+            }
+            else {
+                wrtr.write("{\"response\":" + FAILED + "}");
+            }
         }
 
         private synchronized void searchTickets(JSONObject message) {
@@ -343,7 +360,8 @@ public class ServerHandler {
             if (valid) {
                 User user = serverUserManager.getUser(username);
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"permissions\": \"" + encodeMessage(user.getType()) + "\"}");
-            } else {
+            }
+            else {
                 wrtr.write("{\"response\":" + FAILED + "}");
             }
         }
@@ -378,7 +396,7 @@ public class ServerHandler {
                 wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": \"" + encodeMessage(userString) +"\"}");
             }
             else {
-                wrtr.write("{\"response\":" + FAILED + "}");
+                wrtr.write("{\"response\":" + DELETED + "}");
             }
         }
 
@@ -410,6 +428,7 @@ public class ServerHandler {
                         else if (method.equals(SEARCH_TICKETS)) searchTickets(message);
                         else if (method.equals(GET_ALL_TICKETS)) getAllTickets();
                         else if (method.equals(GET_RECENT_TICKETS)) getRecentTickets();
+                        else if (method.equals(DELETE_TICKET)) deleteTicket(message);
                         else if (method.equals(CREATE_ACCOUNT)) createAccount(message);
                         else if (method.equals(VALIDATE_USER)) validateUser(message);
                         else if (method.equals(EDIT_USER)) editUser(message);

@@ -43,10 +43,12 @@ public class ClientHandler {
     private static final String UPDATE_TICKET = "Update ticket";
     private static final String UPDATE_USER = "Update user";
     private static final String EDIT_TICKET = "Edit ticket";
+    private static final String DELETE_TICKET = "Delete ticket";
     private static final String GET_ALL_TICKETS = "Get all tickets";
     private static final String GET_RECENT_TICKETS = "Get recent tickets";
     public static final String SUCCESSFUL = "Successful";
     public static final String FAILED = "Failed";
+    public static final String DELETED = "Deleted";
     private static final String GET_TICKET_HASH = "Get ticket hash";
     private static final String GET_USER_HASH = "Get user hash";
     public static final String INVALID = "Invalid";
@@ -209,6 +211,27 @@ public class ClientHandler {
         JSONObject message = new JSONObject(retrievedJSON);
         if (message.getString("response").equals(SUCCESSFUL)) {
             ticketManager.updateTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
+            return SUCCESSFUL;
+        }
+        return FAILED;
+    }
+
+    /**
+     * Sends a delete ticket request to server.
+     *
+     * @param id The id of the ticket
+     * @return A String that represents the result of the request
+     */
+    public synchronized String deleteTicket(String id) {
+        if (!currentUserType.equals(MANAGER)) {
+            return INVALID;
+        }
+        String sendJson = "{\"request\": " + DELETE_TICKET + ", \"id\": \"" + id + "\"}";
+        wrtr.write(sendJson);
+        String retrievedJSON = rdr.read();
+        JSONObject message = new JSONObject(retrievedJSON);
+        if (message.getString("response").equals(SUCCESSFUL)) {
+            ticketManager.removeTicket(id);
             return SUCCESSFUL;
         }
         return FAILED;
@@ -380,7 +403,8 @@ public class ClientHandler {
             ticketManager.updateTicket(ticketManager.fromJSON(new JSONObject(message.get("result").toString())));
             return SUCCESSFUL;
         }
-        return FAILED;
+        ticketManager.removeTicket(id);
+        return DELETED;
     }
 
     public synchronized String collectTicketHistory(String id) {
@@ -523,7 +547,8 @@ public class ClientHandler {
             userManager.updateUser(user);
             return SUCCESSFUL;
         }
-        return FAILED;
+        userManager.removeUser(username);
+        return DELETED;
     }
 
     /**

@@ -44,6 +44,11 @@ public class TicketHistoryStorer {
         return history;
     }
 
+    public synchronized boolean deleteTicketHistory(String id) {
+        File file = new File(TICKET_HISTORY_DIR + "/" + id + ".json");
+        return file.delete();
+    }
+
     private synchronized List<TicketSnapshot> readHistoryFromFile(File file) {
         List<TicketSnapshot> history = new ArrayList<>();
         try {
