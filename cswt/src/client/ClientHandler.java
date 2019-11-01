@@ -341,7 +341,7 @@ public class ClientHandler {
      * @param assignedTo The wanted assignee of the ticket
      */
     public synchronized void searchTickets(String title, String description, String resolution, String status, String priority, String severity, String client, String assignedTo) {
-        String sendJson = "{\"request\": " + SEARCH_TICKETS + ", \"description\": \"" + description + "\", \"title\": " + title + "\", \"resolution\": " + resolution + "\", \"priority\": \"" + priority + "\", \"severity\": \"" + severity + "\", \"status\": \"" + status + "\", \"client\": \"" + client + "\", \"assignedTo\": \"" + assignedTo + "\"}";
+        String sendJson = "{\"request\": " + SEARCH_TICKETS + ", \"description\": \"" + description + "\", \"title\": \"" + title + "\", \"resolution\": \"" + resolution + "\", \"priority\": \"" + priority + "\", \"severity\": \"" + severity + "\", \"status\": \"" + status + "\", \"client\": \"" + client + "\", \"assignedTo\": \"" + assignedTo + "\"}";
         wrtr.write(sendJson);
         ticketManager.clearManager();
         while (true) {

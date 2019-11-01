@@ -20,7 +20,7 @@ public class MainWindow {
     private String password;
 
     public MainWindow() {
-        clientHandler.collectAllTickets();
+        clientHandler.collectRecentTickets();
         clientHandler.collectAllUsers();
         loginButton.addActionListener(new ActionListener() {
             @Override

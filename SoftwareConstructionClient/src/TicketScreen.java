@@ -51,6 +51,9 @@ public class TicketScreen {
     private JButton historyButton;
     private JButton manageUsersButton;
     private JButton signOutButton;
+    private JButton deleteButton;
+    private JButton refreshButton;
+    private JButton searchTicketsButton;
 
     private static List<Ticket> tickets = new ArrayList();
     private static DefaultListModel model = new DefaultListModel();
@@ -77,7 +80,7 @@ public class TicketScreen {
                     editButton.setText("Exit");
                     editState = false;
                 }
-                else{
+                else {
                     makeInvisible();
                     showLabels();
                     hideEditProperties();
@@ -212,6 +215,26 @@ public class TicketScreen {
             }
         });
 
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Ticket t = tickets.get(ticketList.getSelectedIndex());
+                MainWindow.clientHandler.deleteTicket(t.getId());
+                clear();
+                createModel();
+            }
+        });
+
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                Ticket t = tickets.get(ticketList.getSelectedIndex());
+                MainWindow.clientHandler.updateTicket(t.getId());
+                clear();
+                createModel();
+            }
+        });
+
         filter.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -230,6 +253,16 @@ public class TicketScreen {
                 JFrame ticketWindow = new JFrame("Manage Users");
                 ticketWindow.setMinimumSize(new Dimension(300, 500));
                 ticketWindow.setContentPane(new UserManagementWindow().mainScreen);
+                ticketWindow.setVisible(true);
+            }
+        });
+
+        searchTicketsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JFrame ticketWindow = new JFrame("Search Tickets");
+                ticketWindow.setMinimumSize(new Dimension(300, 500));
+                ticketWindow.setContentPane(new SearchScreen().mainScreen);
                 ticketWindow.setVisible(true);
             }
         });
@@ -315,7 +348,7 @@ public class TicketScreen {
         ticketList.setModel(matching);
     }
 
-    private void clear(){
+    public void clear(){
         titleText.setText("");
         descriptionTextPane.setText("");
         resolutionTextPane.setText("");
@@ -337,16 +370,20 @@ public class TicketScreen {
             rejectButton.setVisible(true);
             closedButton.setVisible(true);
             openButton.setVisible(true);
+            deleteButton.setVisible(true);
+            refreshButton.setVisible(true);
 
         } else if(currentUser == UserManager.kindOfUser.studentSupport){
             resolvedButton.setVisible(true);
             saveButton.setVisible(true);
+            refreshButton.setVisible(true);
 
         }else if (currentUser == UserManager.kindOfUser.ticketAdmin) {
 
         }else{
             resolvedButton.setVisible(true);
             saveButton.setVisible(true);
+            refreshButton.setVisible(true);
         }
     }
 
@@ -356,6 +393,8 @@ public class TicketScreen {
         rejectButton.setVisible(false);
         closedButton.setVisible(false);
         saveButton.setVisible(false);
+        deleteButton.setVisible(false);
+        refreshButton.setVisible(false);
 
         // if user is admin, add or edit buttons will not be available
         UserManager.kindOfUser currentUser = UserManager.getCurrent().getKindOfUser();
@@ -523,6 +562,7 @@ public class TicketScreen {
     private void removeFocus(){
         manageUsersButton.setFocusable(false);
         historyButton.setFocusable(false);
+        searchTicketsButton.setFocusable(false);
         filter.setFocusable(false);
         signOutButton.setFocusable(false);
     }
