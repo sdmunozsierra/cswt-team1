@@ -180,7 +180,7 @@ public class ServerTicketManager {
 	 * @param id The id of the ticket to be removed
 	 * */
 	public synchronized void deleteTicket(String id) {
-		int index = this.tickets.indexOf(id);
+		int index = this.ids.indexOf(id);
 		this.tickets.remove(index);
 		this.ids.remove(index);
 		this.storer.deleteTicket(getTicket(id));
