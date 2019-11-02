@@ -57,7 +57,7 @@ public class ServerHandler {
     private static ServerSocket server;
     private static ServerTicketManager serverTicketManager = new ServerTicketManager();
     private static ServerUserManager serverUserManager = new ServerUserManager();
-    private static TicketHistoryStorer ticketHistoryStorer = new TicketHistoryStorer();
+    private static TicketHistoryDatabaseStorer ticketHistoryStorer = new TicketHistoryDatabaseStorer();
     private static final String key = "77789BXarcy77777";
     private static Cipher encrypt;
     private static Cipher decrypt;
@@ -196,7 +196,6 @@ public class ServerHandler {
                 wrtr.write("{\"response\":" + FAILED + "}");
             }
         }
-
 
         private synchronized void markTicketAsFixed(JSONObject message) {
             String id = message.getString("id");

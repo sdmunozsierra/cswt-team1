@@ -220,6 +220,9 @@ public class TicketScreen {
             public void actionPerformed(ActionEvent actionEvent) {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
                 MainWindow.clientHandler.deleteTicket(t.getId());
+                makeInvisible();
+                showLabels();
+                hideEditProperties();
                 clear();
                 createModel();
             }
