@@ -44,6 +44,7 @@ public class HistoryScreen {
                 if (e.getClickCount() ==2 ){
                     Ticket t = tickets.get(historyList.getSelectedIndex());
                     String id = t.getId();
+                    historyModel.clear();
                     if ((MainWindow.clientHandler.collectTicketHistory(id)).equals(SUCCESSFUL)) {
                         List<TicketSnapshot> snapshots = MainWindow.clientHandler.getTicketHistory();
                         for (TicketSnapshot snapshot: snapshots) {

@@ -57,10 +57,8 @@ public class TicketHistoryDatabaseStorer {
     }
 
     private boolean ticketHistoryInDatabase(String id) {
-        FindIterable<Document> names = collection.find();
-        FindIterable<Document> docs = collection.find();
         Bson filter = eq("id", id);
-        FindIterable<Document> documents = collection.find();
+        FindIterable<Document> documents = collection.find(filter);
         MongoCursor<Document> cursor = documents.cursor();
         if (cursor.hasNext()) {
             return true;
@@ -76,9 +74,8 @@ public class TicketHistoryDatabaseStorer {
      */
     public List<TicketSnapshot> loadTicketHistory(String id) {
         List<TicketSnapshot> history = new ArrayList<>();
-        FindIterable<Document> docs = collection.find();
         Bson filter = eq("id", id);
-        FindIterable<Document> documents = collection.find();
+        FindIterable<Document> documents = collection.find(filter);
         MongoCursor<Document> cursor = documents.cursor();
         while (cursor.hasNext()) {
             Document document = cursor.next();
