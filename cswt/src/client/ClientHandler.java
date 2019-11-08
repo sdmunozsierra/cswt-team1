@@ -422,7 +422,6 @@ public class ClientHandler {
             }
             ticketHistory.add(convertToSnapshot(new JSONObject(message.get("result").toString())));
         }
-        System.out.println(ticketHistory.size());
         return SUCCESSFUL;
     }
 
