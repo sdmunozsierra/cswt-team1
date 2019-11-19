@@ -217,27 +217,6 @@ public class ClientHandler {
     }
 
     /**
-     * Sends a delete ticket request to server.
-     *
-     * @param id The id of the ticket
-     * @return A String that represents the result of the request
-     */
-    public synchronized String deleteTicket(String id) {
-        if (!currentUserType.equals(MANAGER)) {
-            return INVALID;
-        }
-        String sendJson = "{\"request\": " + DELETE_TICKET + ", \"id\": \"" + id + "\"}";
-        wrtr.write(sendJson);
-        String retrievedJSON = rdr.read();
-        JSONObject message = new JSONObject(retrievedJSON);
-        if (message.getString("response").equals(SUCCESSFUL)) {
-            ticketManager.removeTicket(id);
-            return SUCCESSFUL;
-        }
-        return FAILED;
-    }
-
-    /**
      * Sends a fix ticket request to server.
      *
      * @param id         The id of the ticket

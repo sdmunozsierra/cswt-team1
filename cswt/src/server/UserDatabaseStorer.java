@@ -14,6 +14,7 @@ import org.bson.json.JsonWriterSettings;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -64,14 +65,14 @@ public class UserDatabaseStorer {
      * Converts Documents stored in the database into Users.
      * @return List of Users stored in the database.
      */
-    public List<User> loadUsersFromDatabase() {
-        List<User> users = new ArrayList<>();
+    public HashMap<String, User> loadUsersFromDatabase() {
+        HashMap<String, User> mapping = new HashMap<>();
         FindIterable<Document> docs = collection.find();
         for (Document doc : docs) {
             User user = fromDocumentToUser(doc);
-            users.add(user);
+            mapping.put(user.getUsername(), user);
         }
-        return users;
+        return mapping;
     }
 
     /**
@@ -118,21 +119,6 @@ public class UserDatabaseStorer {
         collection.insertOne(newUser);
     }
 
-    /*
-     * Document is an equivalent to a JSONObject with a key and a value
-     *
-     * @param userJSON JSONObject to convert
-     * @return Document file to be converted
-     */
-    private synchronized Document fromJSONToDocument(JSONObject userJSON) {
-        Document document = new Document()
-                .append("username", userJSON.getString("username"))
-                .append("password", userJSON.getString("password"))
-                .append("type", userJSON.getString("type"))
-                .append("actualName", userJSON.getString("actualName"))
-                .append("email", userJSON.getString("email"));
-        return document;
-    }
 
     /* Used to store user as a document in database
      *

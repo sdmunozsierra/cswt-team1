@@ -268,20 +268,6 @@ public class ServerHandler {
             }
         }
 
-        private synchronized void deleteTicket(JSONObject message) {
-            String id = message.getString("id");
-            Ticket ticket = serverTicketManager.getTicket(id);
-            if (ticket != null) {
-                serverTicketManager.deleteTicket(id);
-                if (ticketHistoryStorer.deleteTicketHistory(id)) {
-                    wrtr.write("{\"response\":" + SUCCESSFUL + "}");
-                }
-            }
-            else {
-                wrtr.write("{\"response\":" + FAILED + "}");
-            }
-        }
-
         private synchronized void searchTickets(JSONObject message) {
             List<Ticket> validTickets = new ArrayList<Ticket>();
             String title = message.getString("title");
@@ -427,7 +413,6 @@ public class ServerHandler {
                         else if (method.equals(SEARCH_TICKETS)) searchTickets(message);
                         else if (method.equals(GET_ALL_TICKETS)) getAllTickets();
                         else if (method.equals(GET_RECENT_TICKETS)) getRecentTickets();
-                        else if (method.equals(DELETE_TICKET)) deleteTicket(message);
                         else if (method.equals(CREATE_ACCOUNT)) createAccount(message);
                         else if (method.equals(VALIDATE_USER)) validateUser(message);
                         else if (method.equals(EDIT_USER)) editUser(message);

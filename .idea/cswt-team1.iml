@@ -41,6 +41,8 @@
     <orderEntry type="library" name="bson-3.11.0" level="project" />
     <orderEntry type="library" name="mongodb-driver-3.11.0" level="project" />
     <orderEntry type="library" name="mongodb-driver-core-3.11.0" level="project" />
+    <orderEntry type="library" name="javax.mail" level="project" />
+    <orderEntry type="library" name="activation-1.1" level="project" />
   </component>
   <component name="sonarModuleSettings">
     <option name="localAnalysisScripName" value="&lt;PROJECT&gt;" />

@@ -6,14 +6,14 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import cswt.Ticket;
 
 public class ServerTicketManager {
-	
-	private List<Ticket> tickets;
-	private List<String> ids;
+
+	private HashMap<String, Ticket> mapping;
 	private TicketDatabaseStorer storer;
 	// Status constants
 	private static final String STATUS_NEW = "NEW";
@@ -25,8 +25,7 @@ public class ServerTicketManager {
 	
 	public ServerTicketManager() {
 		this.storer = new TicketDatabaseStorer();
-		this.tickets = this.storer.loadTicketsFromDatabase();
-		getIds();
+		this.mapping = this.storer.loadTicketsFromDatabase();
 	}
 	
 	/** Creates a new ticket and stores it. 
@@ -89,8 +88,7 @@ public class ServerTicketManager {
 	 * @return The updated ticket or null if the system was unable to store the ticket
 	 * */
 	public synchronized Ticket openTicket(String id, String priority, String assignedTo) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
+		Ticket ticket = mapping.get(id);
 		ticket.setPriority(priority);
 		ticket.setStatus(STATUS_OPENED);
 		ticket.setAssignedTo(assignedTo);
@@ -108,8 +106,7 @@ public class ServerTicketManager {
 	 * @return The updated ticket or null if the system was unable to store the ticket
 	 * */
 	public synchronized Ticket markTicketAsFixed(String id, String resolution) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
+		Ticket ticket = mapping.get(id);
 		ticket.setStatus(STATUS_FIXED);
 		ticket.setResolution(resolution);
 		this.storer.storeTicket(ticket);
@@ -121,8 +118,7 @@ public class ServerTicketManager {
 	 * @return The updated ticket or null if the system was unable to store the ticket
 	 * */
 	public synchronized Ticket closeTicket(String id) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
+		Ticket ticket = mapping.get(id);
 		ticket.setStatus(STATUS_CLOSED);
 		String pattern = "MM/dd/yyyy";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -136,8 +132,7 @@ public class ServerTicketManager {
 	 * @return The updated ticket or null if the system was unable to store the ticket
 	 * */
 	public synchronized Ticket rejectTicket(String id) {
-		int index = ids.indexOf(id);
-		Ticket ticket = tickets.get(index);
+		Ticket ticket = mapping.get(id);
 		ticket.setStatus(STATUS_REJECTED);
 		this.storer.storeTicket(ticket);
 		return ticket;
@@ -149,19 +144,10 @@ public class ServerTicketManager {
 	 * */
 	private synchronized boolean addTicket(Ticket ticket) {
 		this.storer.storeTicket(ticket);
-		this.tickets.add(ticket);
-		this.ids.add(ticket.getId());
+		mapping.put(ticket.getId(), ticket);
 		return true;
 	}
-	
-	/** Gets the list of ids for the manager 
-	 * */
-	private synchronized void getIds() {
-		this.ids = new ArrayList<String>();
-		for (Ticket ticket: this.tickets) {
-			ids.add(ticket.getId());
-		}
-	}
+
 	
 	
 	/** Gets a ticket based on provided ticket id
@@ -169,21 +155,10 @@ public class ServerTicketManager {
 	 * @return The ticket or null if no ticket with that username exists
 	 * */
 	public synchronized Ticket getTicket(String id) {
-		int index = this.ids.indexOf(id);
-		if (index == -1) {
+		if (!mapping.containsKey(id)) {
 			return null;
 		}
-		return this.tickets.get(index);
-	}
-
-	/** Removes a ticket from the manager and storage.
-	 * @param id The id of the ticket to be removed
-	 * */
-	public synchronized void deleteTicket(String id) {
-		int index = this.ids.indexOf(id);
-		this.storer.deleteTicket(getTicket(id));
-		this.tickets.remove(index);
-		this.ids.remove(index);
+		return mapping.get(id);
 	}
 
 	/** Gets a copy of a ticket based on provided ticket id
@@ -191,11 +166,10 @@ public class ServerTicketManager {
 	 * @return The ticket or null if no ticket with that username exists
 	 * */
 	public synchronized Ticket getTicketAsCopy(String id) {
-		int index = this.ids.indexOf(id);
-		if (index == -1) {
+		if (!mapping.containsKey(id)) {
 			return null;
 		}
-		Ticket original = this.tickets.get(index);
+		Ticket original = mapping.get(id);
 		Ticket copy = new Ticket();
 		copy.setTitle(original.getTitle());
 		copy.setId(original.getId());
@@ -215,14 +189,16 @@ public class ServerTicketManager {
 	 * @return The list of all tickets
 	 * */
 	public synchronized List<Ticket> getAllTickets() {
-		return this.tickets;
+		return new ArrayList<Ticket>(mapping.values());
 	}
 
 	/** Gets all ticket ids
 	 * @return The list of all ids
 	 * */
 	public synchronized List<String> getAllIds() {
-		return this.ids;
+		List<String> ids = new ArrayList<String>();
+		ids.addAll(mapping.keySet());
+		return ids;
 	}
 
 	/** Sets the storer for the tickets

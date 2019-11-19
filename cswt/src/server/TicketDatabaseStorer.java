@@ -8,12 +8,9 @@ import com.mongodb.client.MongoDatabase;
 import cswt.Ticket;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.json.JsonMode;
-import org.bson.json.JsonWriterSettings;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
@@ -67,14 +64,14 @@ public class TicketDatabaseStorer {
      *
      * @return List of Tickets
      */
-    public List<Ticket> loadTicketsFromDatabase() {
-        List<Ticket> tickets = new ArrayList<>();
+    public HashMap<String, Ticket> loadTicketsFromDatabase() {
         FindIterable<Document> docs = collection.find();
+        HashMap<String, Ticket> mapping = new HashMap<>();
         for (Document doc : docs) {
             Ticket ticket = fromDocumentToTicket(doc);
-            tickets.add(ticket);
+            mapping.put(ticket.getId(), ticket);
         }
-        return tickets;
+        return mapping;
     }
 
     /**
@@ -94,20 +91,19 @@ public class TicketDatabaseStorer {
      * @param ticket
      */
     private synchronized void updateTicketInDatabase(Ticket ticket) {
-        JSONObject jsonTicket = ticket.toJSON();
-        Bson filter = eq("id", jsonTicket.getString("id"));
+        Bson filter = eq("id", ticket.getId());
         Bson query = combine(
-                set("title", jsonTicket.getString("title")),
-                set("description", jsonTicket.getString("description")),
-                set("assignedTo", jsonTicket.getString("assignedTo")),
-                set("client", jsonTicket.getString("client")),
-                set("closedDate", jsonTicket.getString("closedDate")),
-                set("openedDate", jsonTicket.getString("openedDate")),
-                set("priority", jsonTicket.getString("priority")),
-                set("status", jsonTicket.getString("status")),
-                set("resolution", jsonTicket.getString("resolution")),
-                set("severity", jsonTicket.getString("severity")),
-                set("timeSpent", jsonTicket.getString("timeSpent")));
+                set("title", ticket.getTitle()),
+                set("description",ticket.getDescription()),
+                set("assignedTo", ticket.getAssignedTo()),
+                set("client", ticket.getClient()),
+                set("closedDate", ticket.getClosedDate()),
+                set("openedDate", ticket.getOpenedDate()),
+                set("priority", ticket.getPriority()),
+                set("status", ticket.getStatus()),
+                set("resolution", ticket.getResolution()),
+                set("severity", ticket.getSeverity()),
+                set("timeSpent", ticket.getTimeSpent()));
         collection.findOneAndUpdate(filter, query);
     }
 
@@ -134,28 +130,6 @@ public class TicketDatabaseStorer {
         return false;
     }
 
-    /*
-     * Document is an equivalent to a JSONObject with a key and a value
-     *
-     * @param json JSONObject to convert
-     * @return Document file to be converted
-     */
-    private synchronized Document fromJSONToDocument(JSONObject json) {
-        Document document = new Document()
-                .append("title", json.getString("title"))
-                .append("description", json.getString("description"))
-                .append("assignedTo", json.getString("assignedTo"))
-                .append("client", json.getString("client"))
-                .append("closedDate", json.getString("closedDate"))
-                .append("openedDate", json.getString("openedDate"))
-                .append("priority", json.getString("priority"))
-                .append("status", json.getString("status"))
-                .append("resolution", json.getString("resolution"))
-                .append("severity", json.getString("severity"))
-                .append("id", json.getString("id"))
-                .append("timeSpent", json.getString("timeSpent"));
-        return document;
-    }
 
     /* Used when storing tickets in the databse as documents
      * @param ticket
@@ -179,16 +153,6 @@ public class TicketDatabaseStorer {
         return document;
     }
 
-    /*
-     * Converts a Document to a JSONObject
-     * @param document
-     * @return
-     */
-    private synchronized JSONObject fromDocumentToJSONObject(Document document) {
-        JsonWriterSettings relaxed = JsonWriterSettings.builder().outputMode(JsonMode.RELAXED).build();
-        JSONObject json = new JSONObject(document.toJson(relaxed));
-        return json;
-    }
 
     /* Used when getting Tickets that are stored in the database as Documents.
      *

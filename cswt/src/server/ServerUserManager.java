@@ -1,20 +1,19 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import cswt.User;
 
 public class ServerUserManager {
 	
-	private List<User> users;
-	private List<String> usernames;
+	private HashMap<String, User> mapping;
 	private UserDatabaseStorer storer;
 	
 	public ServerUserManager() {
 		this.storer = new UserDatabaseStorer();
-		this.users = this.storer.loadUsersFromDatabase();
-		getUsernames();
+		this.mapping = this.storer.loadUsersFromDatabase();
 	}
 	
 	/** Creates an account for a new user. 
@@ -63,11 +62,10 @@ public class ServerUserManager {
 	 * @return If the username and password are valid
 	 * * */
 	public synchronized boolean validateUser(String username, String password) {
-		int index = this.usernames.indexOf(username);
-		if (index == -1) {
+		if (!mapping.containsKey(username)) {
 			return false;
 		}
-		User user = this.users.get(index);
+		User user = mapping.get(username);
 		return user.getPassword().equals(password);
 	}
 	
@@ -78,27 +76,18 @@ public class ServerUserManager {
 	 * */
 	private boolean addUser(User user) {
 		this.storer.storeUser(user);
-		this.users.add(user);
-		this.usernames.add(user.getUsername());
+		mapping.put(user.getUsername(), user);
 		return true;
-	}
-	
-	/** Gets the list of usernames for the manager 
-	 * */
-	private synchronized void getUsernames() {
-		this.usernames = new ArrayList<String>();
-		for (User user: this.users) {
-			usernames.add(user.getUsername());
-		}
 	}
 	
 	/** Removes a user from the manager and storage. 
 	 * @param username The username of the user to be removed
 	 * */
 	public synchronized void deleteUser(String username) {
-		int index = this.usernames.indexOf(username);
-		this.usernames.remove(index);
-		this.users.remove(index);
+		if (!mapping.containsKey(username)) {
+			return;
+		}
+		mapping.remove(username);
 		this.storer.deleteUser(username);
 	}
 	
@@ -108,11 +97,10 @@ public class ServerUserManager {
 	 * @return The user or null if no user with that username exists
 	 * */
 	public synchronized User getUser(String username) {
-		int index = this.usernames.indexOf(username);
-		if (index == -1) {
+		if (!mapping.containsKey(username)) {
 			return null;
 		}
-		return this.users.get(index);
+		return mapping.get(username);
 	}
 	
 	/** Checks if a username has been registered in the manager
@@ -120,8 +108,7 @@ public class ServerUserManager {
 	 * @return If the user is in the manager or not
 	 * */
 	public synchronized boolean hasUser(String username) {
-		int index = this.usernames.indexOf(username);
-		if (index == -1) {
+		if (!mapping.containsKey(username)) {
 			return false;
 		}
 		return true;
@@ -138,6 +125,6 @@ public class ServerUserManager {
 	 * @return The list of all users
 	 * */
 	public synchronized List<User> getAllUsers() {
-		return this.users;
+		return new ArrayList<User>(mapping.values());
 	}
 }
