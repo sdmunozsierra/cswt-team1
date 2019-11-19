@@ -51,7 +51,6 @@ public class TicketScreen {
     private JButton historyButton;
     private JButton manageUsersButton;
     private JButton signOutButton;
-    private JButton deleteButton;
     private JButton refreshButton;
     private JButton searchTicketsButton;
 
@@ -360,7 +359,6 @@ public class TicketScreen {
             rejectButton.setVisible(true);
             closedButton.setVisible(true);
             openButton.setVisible(true);
-            deleteButton.setVisible(true);
             refreshButton.setVisible(true);
 
         } else if(currentUser == UserManager.kindOfUser.studentSupport){
@@ -383,7 +381,6 @@ public class TicketScreen {
         rejectButton.setVisible(false);
         closedButton.setVisible(false);
         saveButton.setVisible(false);
-        deleteButton.setVisible(false);
         refreshButton.setVisible(false);
 
         // if user is admin, add or edit buttons will not be available
