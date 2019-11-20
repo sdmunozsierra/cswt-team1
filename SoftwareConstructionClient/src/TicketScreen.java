@@ -25,8 +25,8 @@ public class TicketScreen {
     private JLabel statusLabel;
     private JLabel priorityLabel;
     private JLabel severityLabel;
-    private JLabel assignedToLabel;
     private JLabel clientLabel;
+    private JLabel assignedToLabel;
     private JLabel openDateLabel;
     private JLabel daysOpenLabel;
     private JLabel closedDateLabel;
@@ -344,8 +344,8 @@ public class TicketScreen {
         statusLabel.setText("");
         priorityLabel.setText("");
         severityLabel.setText("");
-        clientLabel.setText("");
         assignedToLabel.setText("");
+        clientLabel.setText("");
         openDateLabel.setText("");
         daysOpenLabel.setText("");
         closedDateLabel.setText("");
@@ -397,15 +397,15 @@ public class TicketScreen {
     private void hideLabels(){
         priorityLabel.setVisible(false);
         severityLabel.setVisible(false);
-        clientLabel.setVisible(false);
         assignedToLabel.setVisible(false);
+        clientLabel.setVisible(false);
     }
 
     private void showLabels(){
         priorityLabel.setVisible(true);
         severityLabel.setVisible(true);
-        clientLabel.setVisible(true);
         assignedToLabel.setVisible(true);
+        clientLabel.setVisible(true);
     }
 
     private void setText(){
@@ -416,8 +416,10 @@ public class TicketScreen {
         statusLabel.setText(t.getStatus());
         priorityLabel.setText(t.getPriority());
         severityLabel.setText(t.getSeverity());
-        clientLabel.setText(t.getClient());
         assignedToLabel.setText(t.getAssignedTo());
+        clientLabel.setText(t.getClient());
+        System.out.println("Client:" + t.getClient());
+        System.out.println("Assigned to:" + t.getAssignedTo());
         openDateLabel.setText(t.getOpenedDate());
         closedDateLabel.setText(t.getClosedDate());
         if (t.getClosedDate().equals("") && !t.getOpenedDate().equals("")){
