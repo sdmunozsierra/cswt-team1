@@ -174,9 +174,6 @@ public class ClientHandler {
         if (!currentUserType.equals(MANAGER)) {
         	return INVALID;
         }
-        if (assignedTo.equals("")){
-            return FAILED;
-        }
         if (!isTicketEditable(id)) {
             return OLD;
         }
@@ -226,9 +223,6 @@ public class ClientHandler {
     public synchronized String markTicketAsFixed(String id, String resolution) {
         if (currentUserType.equals(TICKET_ADMIN)) {
             return INVALID;
-        }
-        if (resolution.equals("")) {
-            return FAILED;
         }
         if (!isTicketEditable(id)) {
             return OLD;

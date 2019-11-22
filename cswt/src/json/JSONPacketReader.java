@@ -3,16 +3,6 @@ package json;
 import java.io.DataInputStream;
 import java.io.InputStream;
 
-/**
- * <p>
- * A class for reading a packet of JSON data from a stream. See
- * {@link JSONPacketWriter} for packet structure details.
- * </p>
- * 
- * @author Ryan Beckett
- * @version 1.0
- * @since Dec 22, 2011
- */
 public class JSONPacketReader extends JSONReader {
 
     public JSONPacketReader(InputStream inStrm, String encd) {

@@ -3,17 +3,6 @@ package json;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * <p>
- * Abstract class for reading JSON data to byte streams. See {@link JSONWriter}
- * for customization details.
- * </p>
- * 
- * 
- * @author Ryan Beckett
- * @version 1.0
- * @since Dec 23, 2011
- */
 public abstract class JSONReader {
 
     protected InputStream inStrm;

@@ -6,29 +6,6 @@ import java.nio.ByteBuffer;
 
 import org.json.JSONObject;
 
-/**
- * A class for writing a packet of encoded JSON data to a stream.
- * 
- * <p>
- * JSON data is encapsulated in a generic packet. Often servers request to know
- * how much data to expect. The payload (JSON data) is preceded by an unsigned
- * 4-byte big-indian integer that represents the payload length. The packet
- * structure is as follows:
- * </p>
- * 
- * <pre>
- * ----------------------------------------------
- * 1|0|0|0|0|0|1|1|0|0|0|1|0|0|1|0|0|1|1|0|1|1|1|
- * ----------------------------------------------
- * |                    Payload                 |
- * ----------------------------------------------
- * </pre>
- * 
- * 
- * @author Ryan Beckett
- * @version 1.0
- * @since Dec 22, 2011
- */
 public class JSONPacketWriter extends JSONWriter {
 
     public JSONPacketWriter(OutputStream outStrm, String encd) {
