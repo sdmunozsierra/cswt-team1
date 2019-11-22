@@ -20,8 +20,13 @@ public class MainWindow {
     private String password;
 
     public MainWindow() {
-        clientHandler.collectRecentTickets();
-        clientHandler.collectAllUsers();
+        try {
+            clientHandler.collectRecentTickets();
+            clientHandler.collectAllUsers();
+        }catch (Exception e) {
+            JOptionPane.showMessageDialog(mainWindow, "Server is not operational. Please try again later.");
+            System.exit(0);
+        }
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

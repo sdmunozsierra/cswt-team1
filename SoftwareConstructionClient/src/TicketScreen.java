@@ -191,7 +191,7 @@ public class TicketScreen {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
-                if (!t.getStatus().equals("OPEN") || !t.getStatus().equals("FIXED")) {
+                if (!t.getStatus().equals("OPEN") && !t.getStatus().equals("FIXED")) {
                     JOptionPane.showMessageDialog(mainScreen, "Error: Ticket status must be 'OPEN' in order to be closed");
                 }
                 else {
@@ -353,6 +353,7 @@ public class TicketScreen {
 
     private void makeVisible(){
         UserManager.kindOfUser currentUser = UserManager.getCurrent().getKindOfUser();
+        System.out.println(currentUser);
         if(currentUser == UserManager.kindOfUser.manager) {
             resolvedButton.setVisible(true);
             saveButton.setVisible(true);
@@ -360,13 +361,19 @@ public class TicketScreen {
             closedButton.setVisible(true);
             openButton.setVisible(true);
             refreshButton.setVisible(true);
+            manageUsersButton.setVisible(false);
 
         } else if(currentUser == UserManager.kindOfUser.studentSupport){
             resolvedButton.setVisible(true);
             saveButton.setVisible(true);
             refreshButton.setVisible(true);
+            closedButton.setVisible(false);
+            openButton.setVisible(false);
+            manageUsersButton.setVisible(false);
 
         }else if (currentUser == UserManager.kindOfUser.ticketAdmin) {
+            searchTicketsButton.setVisible(false);
+            historyButton.setVisible(false);
 
         }else{
             resolvedButton.setVisible(true);
@@ -388,6 +395,8 @@ public class TicketScreen {
         if (currentUser == UserManager.kindOfUser.ticketAdmin){
             addButton.setVisible(false);
             editButton.setVisible(false);
+            historyButton.setVisible(false);
+            searchTicketsButton.setVisible(false);
         }
         else{
             manageUsersButton.setVisible(false);
@@ -418,8 +427,6 @@ public class TicketScreen {
         severityLabel.setText(t.getSeverity());
         assignedToLabel.setText(t.getAssignedTo());
         clientLabel.setText(t.getClient());
-        System.out.println("Client:" + t.getClient());
-        System.out.println("Assigned to:" + t.getAssignedTo());
         openDateLabel.setText(t.getOpenedDate());
         closedDateLabel.setText(t.getClosedDate());
         if (t.getClosedDate().equals("") && !t.getOpenedDate().equals("")){

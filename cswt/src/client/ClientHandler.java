@@ -62,7 +62,7 @@ public class ClientHandler {
     private static final String GET_ALL_USERS = "Get all users";
     public static final String MANAGER = "Manager";
     public static final String TICKET_ADMIN = "Ticket Admin";
-    public static final String DEPARTMENT_SUPPORT = "Department Support";
+    public static final String DEPARTMENT_SUPPORT = "Support";
     private static final String key = "77789BXarcy77777";
 
     // Class Members
