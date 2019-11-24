@@ -4,56 +4,55 @@ import cswt.Ticket;
 import cswt.TicketSnapshot;
 import org.junit.Before;
 import org.junit.Test;
-import server.TicketHistoryStorer;
+import server.TicketHistoryDatabaseStorer;
 
-import java.nio.file.Paths;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class TicketHistoryStorerTest {
-    TicketHistoryStorer storer;
-    final String TEST_DIR = Paths.get(System.getProperty("user.dir"), "sampleTicketsHistory").toString();
 
+public class TicketHistoryDatabaseStorerTest {
+
+    TicketHistoryDatabaseStorer storer;
     @Before
     public void SetUp() {
-        storer = new TicketHistoryStorer();
-        storer.TICKET_HISTORY_DIR = TEST_DIR;
+        storer = new TicketHistoryDatabaseStorer();
     }
 
     @Test
     public void testLoadTicketHistory() {
+        Ticket t = new Ticket();
+        t.setId("1");
+        storer.updateTicketHistory(t, "manager", "Create ticket");
         List<TicketSnapshot> snapshots = storer.loadTicketHistory("1");
-        assertEquals(5, snapshots.size());
+        assertEquals(1, snapshots.size());
         TicketSnapshot snapshot = snapshots.get(0);
         Ticket ticket = snapshot.getTicket();
         assertEquals("1", ticket.getId());
         assertEquals("Create ticket", snapshot.getWhatModified());
         assertEquals("manager", snapshot.getModifier());
+        storer.deleteTicketHistory("1");
     }
 
     @Test
     public void testUpdateTicketHistory() {
-        Ticket ticket = new Ticket();
-        ticket.setId("2");
-        ticket.setDescription("Description");
-        storer.updateTicketHistory(ticket, "Modifier", "Modified");
-        List<TicketSnapshot> snapshots = storer.loadTicketHistory("2");
-        TicketSnapshot snapshot = snapshots.get(0);
-        Ticket t = snapshot.getTicket();
-        assertEquals("2", t.getId());
-        assertEquals("Modifier", snapshot.getModifier());
-        assertEquals("Modified", snapshot.getWhatModified());
-        storer.deleteTicketHistory("2");
+        Ticket t = new Ticket();
+        t.setId("1");
+        storer.updateTicketHistory(t, "manager", "Create ticket");
+        storer.updateTicketHistory(t, "manager", "Open Ticket");
+        List<TicketSnapshot> snapshots = storer.loadTicketHistory("1");
+        assertEquals(2, snapshots.size());
+        storer.deleteTicketHistory("1");
     }
 
     @Test
     public void testDeleteTicketHistory() {
-        Ticket ticket = new Ticket();
-        ticket.setId("2");
-        ticket.setDescription("Description");
-        storer.updateTicketHistory(ticket, "Modifier", "Modified");
-        assertEquals(true, storer.deleteTicketHistory("2"));
+        Ticket t = new Ticket();
+        t.setId("1");
+        storer.updateTicketHistory(t, "manager", "Create ticket");
+        storer.updateTicketHistory(t, "manager", "Open Ticket");
+        List<TicketSnapshot> snapshots = storer.loadTicketHistory("1");
+        assertEquals(true, storer.deleteTicketHistory("1"));
     }
 
     @Test

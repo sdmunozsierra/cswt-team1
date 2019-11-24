@@ -30,14 +30,14 @@ import static cswt.Ticket.convertToTicket;
  */
 public class TicketHistoryDatabaseStorer {
 
-    private static final String CHANGE_DESCRIPTION = "Change description";
-    private static final String CHANGE_PRIORITY = "Change priority";
-    private static final String CHANGE_SEVERITY = "Change severity";
-    private static final String CHANGE_ASSIGNED_TO = "Change assigned to";
-    private static final String CHANGE_RESOLUTION = "Change resolution";
-    private static final String CHANGE_CLIENT = "Change client";
-    private static final String CHANGE_TITLE = "Change title";
-    private static final String MULTIPLE_CHANGES = "Multiple changes";
+    public static final String CHANGE_DESCRIPTION = "Change description";
+    public static final String CHANGE_PRIORITY = "Change priority";
+    public static final String CHANGE_SEVERITY = "Change severity";
+    public static final String CHANGE_ASSIGNED_TO = "Change assigned to";
+    public static final String CHANGE_RESOLUTION = "Change resolution";
+    public static final String CHANGE_CLIENT = "Change client";
+    public static final String CHANGE_TITLE = "Change title";
+    public static final String MULTIPLE_CHANGES = "Multiple changes";
 
     private final String DATABASE_NAME = "Database";
     private final String TICKET_COLLECTION = "TicketHistoryCollection";

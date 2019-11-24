@@ -16,11 +16,11 @@ public class ServerTicketManager {
 	private HashMap<String, Ticket> mapping;
 	private TicketDatabaseStorer storer;
 	// Status constants
-	private static final String STATUS_NEW = "NEW";
-	private static final String STATUS_OPENED = "OPEN";
-	private static final String STATUS_CLOSED = "CLOSED";
-	private static final String STATUS_REJECTED = "REJECTED";
-	private static final String STATUS_FIXED = "FIXED";
+	public static final String STATUS_NEW = "NEW";
+	public static final String STATUS_OPENED = "OPEN";
+	public static final String STATUS_CLOSED = "CLOSED";
+	public static final String STATUS_REJECTED = "REJECTED";
+	public static final String STATUS_FIXED = "FIXED";
 	
 	
 	public ServerTicketManager() {
@@ -184,6 +184,14 @@ public class ServerTicketManager {
 		copy.setTimeSpent(original.getTimeSpent());
 		return copy;
 	}
+
+	public synchronized void deleteTicket(String id) {
+		if (mapping.containsKey(id)) {
+			this.storer.deleteTicket(mapping.get(id));
+			mapping.remove(id);
+		}
+		return;
+	}
 	
 	/** Gets all tickets
 	 * @return The list of all tickets
@@ -201,10 +209,4 @@ public class ServerTicketManager {
 		return ids;
 	}
 
-	/** Sets the storer for the tickets
-	 * @param storer The storer to be set
-	 * */
-	public synchronized  void setStorer(TicketDatabaseStorer storer) {
-		this.storer = storer;
-	}
 }

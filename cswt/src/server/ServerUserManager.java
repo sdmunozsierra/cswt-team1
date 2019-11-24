@@ -113,13 +113,6 @@ public class ServerUserManager {
 		}
 		return true;
 	}
-
-	/** Sets the storer for the users
-	 * @param storer The storer to be set
-	 * */
-	public synchronized  void setStorer(UserDatabaseStorer storer) {
-		this.storer = storer;
-	}
 	
 	/** Gets all current users
 	 * @return The list of all users
