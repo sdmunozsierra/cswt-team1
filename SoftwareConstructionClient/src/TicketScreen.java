@@ -73,6 +73,7 @@ public class TicketScreen {
             public void actionPerformed(ActionEvent e) {
 
                 if (editState == true) {
+                    setText();
                     makeVisible();
                     hideLabels();
                     showEditProperties();
@@ -119,8 +120,7 @@ public class TicketScreen {
                     String status = MainWindow.clientHandler.openTicket(t.getId(),t.getPriority(),t.getAssignedTo());
                     if (SUCCESSFUL.equals(status)) {
                         tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
-                        clear();
-                        createModel();
+                        setText();
                     }
                     else if (FAILED.equals(status)) {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Operation failed. Please try again later.");
@@ -144,8 +144,7 @@ public class TicketScreen {
                 String status = MainWindow.clientHandler.markTicketAsFixed(t.getId(),resolutionTextPane.getText());
                 if (status.equals(SUCCESSFUL)) {
                     tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
-                    clear();
-                    createModel();
+                    setText();
                 }
                 else if (FAILED.equals(status)) {
                     JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Operation failed. Please try again later.");
@@ -170,8 +169,7 @@ public class TicketScreen {
                     String status = MainWindow.clientHandler.rejectTicket(t.getId());
                     if (status.equals(SUCCESSFUL)){
                         tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
-                        clear();
-                        createModel();
+                        setText();
                     }
                     else if (FAILED.equals(status)) {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Operation failed. Please try again later.");
@@ -198,8 +196,7 @@ public class TicketScreen {
                     String status = MainWindow.clientHandler.closeTicket(t.getId());
                     if (status.equals(SUCCESSFUL)) {
                         tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
-                        clear();
-                        createModel();
+                        setText();
                     }
                     else if (FAILED.equals(status)) {
                         JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Operation failed. Please try again later.");
@@ -219,8 +216,21 @@ public class TicketScreen {
             public void actionPerformed(ActionEvent actionEvent) {
                 Ticket t = tickets.get(ticketList.getSelectedIndex());
                 MainWindow.clientHandler.updateTicket(t.getId());
-                clear();
-                createModel();
+                Ticket ticket = MainWindow.clientHandler.getTicket(t.getId());
+                t.setId(ticket.getId());
+                t.setDescription(ticket.getDescription());
+                t.setPriority(ticket.getPriority());
+                t.setStatus(ticket.getStatus());
+                t.setSeverity(ticket.getSeverity());
+                t.setAssignedTo(ticket.getAssignedTo());
+                t.setTitle(ticket.getTitle());
+                t.setTimeSpent(ticket.getTimeSpent());
+                t.setClient(ticket.getClient());
+                t.setResolution(ticket.getResolution());
+                t.setOpenedDate(ticket.getOpenedDate());
+                t.setClosedDate(ticket.getClosedDate());
+                setText();
+                setEditPropertiesText();
             }
         });
 
@@ -315,6 +325,19 @@ public class TicketScreen {
                     if(ticketList.getSelectedValue() != null){
                         Ticket t = tickets.get(ticketList.getSelectedIndex());
                         MainWindow.clientHandler.updateTicket(t.getId());
+                        Ticket ticket = MainWindow.clientHandler.getTicket(t.getId());
+                        t.setId(ticket.getId());
+                        t.setDescription(ticket.getDescription());
+                        t.setPriority(ticket.getPriority());
+                        t.setStatus(ticket.getStatus());
+                        t.setSeverity(ticket.getSeverity());
+                        t.setAssignedTo(ticket.getAssignedTo());
+                        t.setTitle(ticket.getTitle());
+                        t.setTimeSpent(ticket.getTimeSpent());
+                        t.setClient(ticket.getClient());
+                        t.setResolution(ticket.getResolution());
+                        t.setOpenedDate(ticket.getOpenedDate());
+                        t.setClosedDate(ticket.getClosedDate());
                         setText();
                         setEditPropertiesText();
                     }
@@ -353,7 +376,6 @@ public class TicketScreen {
 
     private void makeVisible(){
         UserManager.kindOfUser currentUser = UserManager.getCurrent().getKindOfUser();
-        System.out.println(currentUser);
         if(currentUser == UserManager.kindOfUser.manager) {
             resolvedButton.setVisible(true);
             saveButton.setVisible(true);
@@ -480,7 +502,7 @@ public class TicketScreen {
             MainWindow.clientHandler.updateTicket(t.getId());
             tickets.set(ticketList.getSelectedIndex(), MainWindow.clientHandler.getTicket(t.getId()));
             Ticket temp = tickets.get(ticketList.getSelectedIndex());
-            createModel();
+            setText();
         }
         else if (status.equals(FAILED)){
             JOptionPane.showMessageDialog(MainWindow.mainWindow, "Error: Invalid fields entered. Please try again.");

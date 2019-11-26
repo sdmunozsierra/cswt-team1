@@ -257,6 +257,7 @@ public class ServerHandler {
             String id = message.getString("id");
             history = ticketHistoryStorer.loadTicketHistory(id);
             if (history != null) {
+
                 for (TicketSnapshot ticketSnapshot : history) {
                     String snapshotString = ticketSnapshot.toJSON().toString();
                     wrtr.write("{\"response\":" + SUCCESSFUL + ", \"result\": " + snapshotString +"}");

@@ -6,8 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static client.ClientHandler.FAILED;
-import static client.ClientHandler.SUCCESSFUL;
+import static client.ClientHandler.*;
 
 public class UserManagementWindow {
     public JPanel mainScreen;
@@ -93,7 +92,7 @@ public class UserManagementWindow {
                         result = MainWindow.clientHandler.createAccount(usernameText.getText(), passwordText.getText(), type.getSelectedItem().toString(), nameText.getText(), emailText.getText());
                     }
 
-                    if (result.equals(SUCCESSFUL)) {
+                        if (result.equals(SUCCESSFUL)) {
                             createModel();
                             userList.setModel(model);
                             clear();
@@ -107,6 +106,15 @@ public class UserManagementWindow {
                             }else {
                                 JOptionPane.showMessageDialog(mainScreen, "Error: Unable to create user. Please try again later.");
                             }
+                        }
+                        else if (result.equals(OLD)) {
+                            MainWindow.clientHandler.updateUser(usernameText.getText());
+                            User user = MainWindow.clientHandler.getUser(usernameText.getText());
+                            nameText.setText(user.getActualName());
+                            passwordText.setText(user.getPassword());
+                            emailText.setText(user.getEmail());
+                            type.setSelectedItem(user.getType());
+                            JOptionPane.showMessageDialog(mainScreen, "Error: User has changed. Review changes and try again.");
                         }
                         else {
                             JOptionPane.showMessageDialog(mainScreen, "Error: You do not have the permissions to perform this operation.");
