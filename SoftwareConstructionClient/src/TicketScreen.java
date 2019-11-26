@@ -326,9 +326,9 @@ public class TicketScreen {
     private void search() {
         DefaultListModel matching = new DefaultListModel();
 
-        String word = ticketSearchBar.getText();
+        String word = ticketSearchBar.getText().toLowerCase();
         for (int i = 0; i < model.getSize(); i++){
-            String temp = model.elementAt(i).toString();
+            String temp = model.elementAt(i).toString().toLowerCase();
 
             if (temp.contains(word)){
                 matching.addElement(model.elementAt(i));
